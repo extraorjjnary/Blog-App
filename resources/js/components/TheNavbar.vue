@@ -1,15 +1,23 @@
 <script setup>
-import { useRouter } from "vue-router";
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import api from "../services/api";
 
 const router = useRouter();
+const route = useRoute();
+
+const isLogin = computed(() => {
+    return !["register", "login", "landing"].includes(route.name);
+});
 
 // Dummy logout handler - you'll wire your Sanctum Axios call here later!
-const handleLogout = () => {
-    if (confirm("Are you sure you want to logout, Utol?")) {
-        console.log("Logging out via Sanctum...");
-        // Your Axios logic goes here...
-
-        // Redirect back to login
+const logout = async () => {
+    try {
+        await api.post("/logout");
+    } catch (err) {
+        console.error("Logout error:", err);
+    } finally {
+        localStorage.removeItem("user");
         router.push("/login");
     }
 };
@@ -43,6 +51,7 @@ const handleLogout = () => {
                             Dashboard
                         </RouterLink>
                         <RouterLink
+                            v-if="isLogin"
                             to="/posts/create"
                             class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
                             active-class="text-indigo-600 bg-indigo-50/50"
@@ -52,8 +61,8 @@ const handleLogout = () => {
                     </div>
                 </div>
 
-                <!-- Right Side: User Profile & Actions -->
-                <div class="flex items-center space-x-4">
+                <!-- Right Side: User Profile & Actions **Display only this when the user is auth** -->
+                <div v-if="isLogin" class="flex items-center space-x-4">
                     <div class="hidden sm:flex flex-col text-right">
                         <span class="text-sm font-medium text-slate-700"
                             >Utol Developer</span
@@ -63,11 +72,30 @@ const handleLogout = () => {
 
                     <!-- Logout Button (Ready for your Axios method later) -->
                     <button
-                        @click="handleLogout"
+                        @click="logout"
                         class="inline-flex items-center px-3.5 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all cursor-pointer"
                     >
                         Logout
                     </button>
+                </div>
+
+                <!-- Auth Actions  **Display only this when the user is guest** -->
+                <div v-if="!isLogin" class="flex items-center space-x-4">
+                    <!-- Register Button  -->
+                    <RouterLink
+                        to="/register"
+                        class="inline-flex items-center px-3.5 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all cursor-pointer"
+                    >
+                        Register
+                    </RouterLink>
+
+                    <!-- Login Button **Display only this when the user is guest** -->
+                    <RouterLink
+                        to="/login"
+                        class="inline-flex items-center px-3.5 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all cursor-pointer"
+                    >
+                        Login
+                    </RouterLink>
                 </div>
             </div>
         </div>
