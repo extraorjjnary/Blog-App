@@ -1,0 +1,31 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Post;
+use App\Models\Reaction;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Reaction>
+ */
+class ReactionFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $isGuest = fake()->boolean();
+
+        return [
+            'post_id' => Post::factory(),
+            'user_id' => $isGuest ? null : User::factory(),
+            'guest_identifier' => $isGuest ? fake()->uuid() : null,
+            'reaction_type' => fake()->randomElement(['upvote', 'downvote'])
+        ];
+    }
+}
