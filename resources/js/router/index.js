@@ -1,14 +1,9 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, useRoute } from "vue-router";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     linkActiveClass: "font-bold",
     routes: [
-        {
-            path: "/",
-            name: "landing",
-            component: () => import("../pages/LandingPage.vue"),
-        },
         {
             path: "/register",
             name: "register",
@@ -19,11 +14,19 @@ const router = createRouter({
             name: "login",
             component: () => import("../pages/Auth/LoginPage.vue"),
         },
+
+        // Post Crud
+
         {
-            path: "/dashboard",
-            name: "dashboard",
-            component: () => import("../pages/DashboardPage.vue"),
-            meta: { requiresAuth: true },
+            path: "/",
+            name: "posts.index",
+            component: () => import("../pages/Post/Posts.vue"),
+        },
+
+        {
+            path: "/posts/:id",
+            name: "posts.show",
+            component: () => import("../pages/Post/PostDetail.vue"),
         },
     ],
 });
@@ -32,12 +35,12 @@ router.beforeEach((to, from) => {
     const user = localStorage.getItem("user");
 
     const requiresAuth = to.meta.requiresAuth;
-    const isGuestRoute = ["register", "login", "landing"].includes(to.name);
+    const isGuestRoute = ["register", "login"].includes(to.name);
 
     if (requiresAuth && !user) {
         return "/login";
     } else if (isGuestRoute && user) {
-        return "/dashboard";
+        return "/";
     }
     return true;
 });

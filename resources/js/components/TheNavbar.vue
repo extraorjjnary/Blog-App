@@ -1,24 +1,18 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import api from "../services/api";
+import { useAuthStore } from "../stores/AuthStore";
 
+const auth = useAuthStore();
 const router = useRouter();
-const route = useRoute();
-
-const isLogin = computed(() => {
-    return !["register", "login", "landing"].includes(route.name);
-});
 
 // Dummy logout handler - you'll wire your Sanctum Axios call here later!
 const logout = async () => {
     try {
-        await api.post("/logout");
+        await auth.logout();
+        router.push("/");
     } catch (err) {
         console.error("Logout error:", err);
-    } finally {
-        localStorage.removeItem("user");
-        router.push("/login");
     }
 };
 </script>
@@ -44,15 +38,15 @@ const logout = async () => {
                         class="hidden sm:ml-8 sm:flex sm:space-x-4 items-center"
                     >
                         <RouterLink
-                            to="/dashboard"
+                            to="/"
                             class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
                             active-class="text-indigo-600 bg-indigo-50/50"
                         >
                             Dashboard
                         </RouterLink>
                         <RouterLink
-                            v-if="isLogin"
-                            to="/posts/create"
+                            v-if="auth.isLoggedIn"
+                            to=""
                             class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
                             active-class="text-indigo-600 bg-indigo-50/50"
                         >
@@ -62,7 +56,7 @@ const logout = async () => {
                 </div>
 
                 <!-- Right Side: User Profile & Actions **Display only this when the user is auth** -->
-                <div v-if="isLogin" class="flex items-center space-x-4">
+                <div v-if="auth.isLoggedIn" class="flex items-center space-x-4">
                     <div class="hidden sm:flex flex-col text-right">
                         <span class="text-sm font-medium text-slate-700"
                             >Utol Developer</span
@@ -80,7 +74,10 @@ const logout = async () => {
                 </div>
 
                 <!-- Auth Actions  **Display only this when the user is guest** -->
-                <div v-if="!isLogin" class="flex items-center space-x-4">
+                <div
+                    v-if="!auth.isLoggedIn"
+                    class="flex items-center space-x-4"
+                >
                     <!-- Register Button  -->
                     <RouterLink
                         to="/register"

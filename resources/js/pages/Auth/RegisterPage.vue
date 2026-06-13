@@ -3,13 +3,15 @@ import { ref } from "vue";
 import BaseCard from "../../components/Auth/BaseCard.vue";
 import BaseInput from "../../components/Auth/BaseInput.vue";
 import BaseButton from "../../components/Auth/BaseButton.vue";
-import api from "../../services/api.js";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/AuthStore.js";
 
 const router = useRouter();
 
+const auth = useAuthStore();
+
 // Reactive state to hold registration form parameters
-const form = ref({
+const credentials = ref({
     name: "",
     email: "",
     password: "",
@@ -24,11 +26,8 @@ const regsiter = async () => {
     error.value = null;
 
     try {
-        await api.get("/sanctum/csrf-cookie");
-        const response = await api.post("/register", form.value);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-
-        router.push("/dashboard");
+        await auth.register(credentials.value);
+        router.push("/");
     } catch (err) {
         error.value = err.response?.data?.message || "Registration failed.";
     } finally {
@@ -50,14 +49,14 @@ const regsiter = async () => {
 
             <BaseInput
                 id="name"
-                v-model="form.name"
+                v-model="credentials.name"
                 label="Full Name"
                 placeholder="John Doe"
             />
 
             <BaseInput
                 id="email"
-                v-model="form.email"
+                v-model="credentials.email"
                 label="Email Address"
                 type="email"
                 placeholder="you@example.com"
@@ -65,7 +64,7 @@ const regsiter = async () => {
 
             <BaseInput
                 id="password"
-                v-model="form.password"
+                v-model="credentials.password"
                 label="Password"
                 type="password"
                 placeholder="••••••••"
@@ -73,7 +72,7 @@ const regsiter = async () => {
 
             <BaseInput
                 id="password_confirmation"
-                v-model="form.password_confirmation"
+                v-model="credentials.password_confirmation"
                 label="Password Confirmation"
                 type="password"
                 placeholder="••••••••"

@@ -16,7 +16,7 @@ class PostSeeder extends Seeder
     {
         $users = User::all();
 
-        Post::factory(20)->create([
+        Post::factory(45)->create([
             'user_id' => function () use ($users) {
                 return fake()->randomElement($users)->id;
             }

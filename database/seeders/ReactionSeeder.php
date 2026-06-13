@@ -24,7 +24,7 @@ class ReactionSeeder extends Seeder
             },
 
             'user_id' => function () use ($users) {
-                fake()->boolean() ? fake()->randomElement($users)->id : null;
+                return fake()->boolean() ? fake()->randomElement($users)->id : null;
             },
 
             'guest_identifier' => function (array $attributes) {

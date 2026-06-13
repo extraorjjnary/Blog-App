@@ -19,6 +19,8 @@ class PostController extends Controller
             ->latest()
             ->simplePaginate(10);
 
+        // dd(collect($posts)->toArray());
+
 
         return response()->json($posts);
     }
@@ -53,6 +55,9 @@ class PostController extends Controller
     {
 
         $post->load(['user', 'comments.user', 'reactions.user']);
+        // dd(collect($post)->toArray());
+
+
 
         return response()->json($post, 200);
     }

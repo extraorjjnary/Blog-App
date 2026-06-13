@@ -3,13 +3,15 @@ import { ref } from "vue";
 import BaseCard from "../../components/Auth/BaseCard.vue";
 import BaseInput from "../../components/Auth/BaseInput.vue";
 import BaseButton from "../../components/Auth/BaseButton.vue";
-import api from "../../services/api.js";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/AuthStore.js";
 
 const router = useRouter();
 
+const auth = useAuthStore();
+
 // Reactive state to hold your input values
-const form = ref({
+const credentials = ref({
     email: "",
     password: "",
 });
@@ -22,12 +24,8 @@ const login = async () => {
     error.value = null;
 
     try {
-        await api.get("/axios/csrf-cookie");
-        const response = await api.post("/login", form.value);
-
-        localStorage.setItem("user", JSON.stringify(response.data.user));
-
-        router.push("/dashboard");
+        await auth.login(credentials.value);
+        router.push("/");
     } catch (err) {
         error.value = err.response?.data?.message || "Login failed.";
     } finally {
@@ -48,7 +46,7 @@ const login = async () => {
 
             <BaseInput
                 id="email"
-                v-model="form.email"
+                v-model="credentials.email"
                 label="Email Address"
                 type="email"
                 placeholder="you@example.com"
@@ -56,7 +54,7 @@ const login = async () => {
 
             <BaseInput
                 id="password"
-                v-model="form.password"
+                v-model="credentials.password"
                 label="Password"
                 type="password"
                 placeholder="••••••••"
