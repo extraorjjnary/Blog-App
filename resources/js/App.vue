@@ -4,15 +4,6 @@ import TheNavbar from "./components/TheNavbar.vue";
 </script>
 
 <template>
-    <div
-        class="min-h-screen bg-slate-50 flex flex-col font-sans antialiased text-slate-800"
-    >
-        <TheNavbar />
-        <!-- Main Content Area where your pages dynamically load -->
-        <main class="grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-            <!-- Your RouterView loads IndexPage, CreatePage, etc. here -->
-            <RouterView />
-        </main>
-        <TheFooter />
-    </div>
+    <!-- Example if app find url page components store in parents component, it rather rendered that parent components e.g.,: DefaultLayout, then there will rendered it children components set in routes if it have <RouterView/> in parent components = Nested Routes -->
+    <RouterView />
 </template>

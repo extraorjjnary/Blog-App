@@ -5,6 +5,23 @@ const router = createRouter({
     linkActiveClass: "font-bold",
     routes: [
         {
+            path: "/",
+            component: () => import("../components/layouts/DefaultLayout.vue"), // Contains Navbar + Footer + Inner RouterView
+            children: [
+                {
+                    path: "",
+                    name: "posts.index",
+                    component: () => import("../pages/Post/Posts.vue"),
+                },
+                {
+                    path: "posts/:id",
+                    name: "posts.show",
+                    component: () => import("../pages/Post/PostDetail.vue"),
+                },
+            ],
+        },
+
+        {
             path: "/register",
             name: "register",
             component: () => import("../pages/Auth/RegisterPage.vue"),
@@ -13,20 +30,6 @@ const router = createRouter({
             path: "/login",
             name: "login",
             component: () => import("../pages/Auth/LoginPage.vue"),
-        },
-
-        // Post Crud
-
-        {
-            path: "/",
-            name: "posts.index",
-            component: () => import("../pages/Post/Posts.vue"),
-        },
-
-        {
-            path: "/posts/:id",
-            name: "posts.show",
-            component: () => import("../pages/Post/PostDetail.vue"),
         },
     ],
 });
@@ -40,7 +43,7 @@ router.beforeEach((to, from) => {
     if (requiresAuth && !user) {
         return "/login";
     } else if (isGuestRoute && user) {
-        return "/";
+        return { name: "posts.index" };
     }
     return true;
 });

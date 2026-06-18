@@ -92,6 +92,25 @@ onMounted(() => {
                     >
                         Career & Growth
                     </span>
+                    <button
+                        type="button"
+                        class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 text-slate-600 text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer"
+                    >
+                        <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                        </svg>
+                        <span>Edit Post</span>
+                    </button>
                 </div>
             </header>
 

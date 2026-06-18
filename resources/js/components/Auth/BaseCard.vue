@@ -8,14 +8,12 @@ defineProps({
 </script>
 
 <template>
-    <!-- Centering container -->
     <div
         class="min-h-[70vh] flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8"
     >
         <div
-            class="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50"
+            class="w-full max-w-xl space-y-8 bg-white p-8 sm:p-10 rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50"
         >
-            <!-- Header Section -->
             <header class="text-center">
                 <h2
                     class="text-3xl font-extrabold text-slate-900 tracking-tight"
@@ -27,12 +25,10 @@ defineProps({
                 </p>
             </header>
 
-            <!-- Form Section -->
             <main class="mt-8 space-y-5">
                 <slot />
             </main>
 
-            <!-- Footer / Toggle Link -->
             <footer class="text-center pt-2 border-t border-slate-100">
                 <slot name="footer" />
             </footer>
