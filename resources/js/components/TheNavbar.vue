@@ -46,11 +46,11 @@ const logout = async () => {
                         </RouterLink>
                         <RouterLink
                             v-if="auth.isLoggedIn"
-                            to=""
+                            :to="{ name: 'posts.index' }"
                             class="px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors"
                             active-class="text-indigo-600 bg-indigo-50/50"
                         >
-                            New Post
+                            Share Your Story
                         </RouterLink>
                     </div>
                 </div>

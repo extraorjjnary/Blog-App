@@ -1,12 +1,14 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import api from "../../services/api";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import dayjs from "dayjs";
 import { useReactionCounter } from "../../composables/useReactionCounter";
 import { formatDistanceToNow } from "date-fns";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
+import PostFormModal from "./PostFormModal.vue";
+import { useAuthStore } from "../../stores/AuthStore.js";
 
 // post looks like this:
 // {
@@ -19,10 +21,13 @@ import BaseError from "../../components/ui/BaseError.vue";
 //     reactions: [],
 // }
 
+const auth = useAuthStore();
+
 const post = ref(null);
 
 const { upVoteCount, downVoteCount } = useReactionCounter(post);
 
+const router = useRouter();
 const route = useRoute();
 
 const loading = ref(false);
@@ -48,6 +53,30 @@ onMounted(() => {
 
     fetchPost(id);
 });
+
+// Modal
+const showModal = ref(false);
+
+const onPostUpdated = (updatedPost) => {
+    showModal.value = false;
+    post.value = updatedPost;
+};
+
+const deleteLoading = ref(false);
+const destroy = async () => {
+    deleteLoading.value = true;
+    errorMessage.value = null;
+    try {
+        const response = await api.delete(`/posts/${post.value.id}`);
+
+        router.push({ name: "posts.index" });
+    } catch (error) {
+        errorMessage.value =
+            error.response?.data?.message || "Failed to delete post";
+    } finally {
+        deleteLoading.value = false;
+    }
+};
 
 // reaction type counter: upvote, downvote
 </script>
@@ -92,25 +121,56 @@ onMounted(() => {
                     >
                         Career & Growth
                     </span>
-                    <button
-                        type="button"
-                        class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 text-slate-600 text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer"
+
+                    <div
+                        v-if="auth.user?.id === post.user_id"
+                        class="flex items-center gap-2"
                     >
-                        <svg
-                            class="w-3.5 h-3.5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                        <button
+                            @click="showModal = true"
+                            type="button"
+                            class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 text-slate-600 text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer"
                         >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                        </svg>
-                        <span>Edit Post</span>
-                    </button>
+                            <svg
+                                class="w-3.5 h-3.5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                            </svg>
+                            <span>Edit Post</span>
+                        </button>
+
+                        <button
+                            @click="destroy"
+                            :disabled="deleteLoading"
+                            type="button"
+                            class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 text-slate-600 text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <svg
+                                class="w-3.5 h-3.5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                            </svg>
+                            <span>{{
+                                deleteLoading ? "Deleting..." : "Delete"
+                            }}</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -248,4 +308,11 @@ onMounted(() => {
             </div>
         </section>
     </div>
+
+    <PostFormModal
+        :is-open="showModal"
+        :post="post"
+        @close="showModal = false"
+        @saved="onPostUpdated"
+    />
 </template>

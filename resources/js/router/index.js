@@ -41,7 +41,7 @@ router.beforeEach((to, from) => {
     const isGuestRoute = ["register", "login"].includes(to.name);
 
     if (requiresAuth && !user) {
-        return "/login";
+        return { name: "login" };
     } else if (isGuestRoute && user) {
         return { name: "posts.index" };
     }

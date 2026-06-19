@@ -41,9 +41,13 @@ class PostController extends Controller
 
         $post = $user->posts()->create($validatedData);
 
+        $post->load('user')->loadCount('comments', 'reactions');
+
+
+
+
         return response()->json([
             'message' => "Post created successfully",
-            'author' => $user->name,
             'post' => $post
         ], 201);
     }
@@ -76,6 +80,7 @@ class PostController extends Controller
         ]);
 
         $post->update($validatedData);
+        $post->load(['user', 'comments.user', 'reactions.user']);
 
         return response()->json([
             'message' => 'Post updated successfully',

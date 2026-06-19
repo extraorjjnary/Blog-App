@@ -69,7 +69,7 @@ const login = async () => {
                         placeholder="••••••••"
                     />
 
-                    <BaseButton :is-loading="loading" @click="login">
+                    <BaseButton :is-loading="loading">
                         {{ loading ? "Signing In..." : "Sign In" }}
                     </BaseButton>
                 </form>

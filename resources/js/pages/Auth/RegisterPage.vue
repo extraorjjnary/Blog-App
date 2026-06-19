@@ -88,7 +88,7 @@ const register = async () => {
                         placeholder="••••••••"
                     />
 
-                    <BaseButton :is-loading="loading" @click="register">
+                    <BaseButton :is-loading="loading">
                         {{ loading ? "Registering..." : "Register Account" }}
                     </BaseButton>
                 </form>

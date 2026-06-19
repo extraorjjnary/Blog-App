@@ -4,6 +4,10 @@ import api from "../../services/api";
 import dayjs from "dayjs";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
+import PostFormModal from "./PostFormModal.vue";
+import { useAuthStore } from "../../stores/AuthStore.js";
+
+const auth = useAuthStore();
 
 const posts = ref([]);
 const nextPageUrl = ref(null);
@@ -40,6 +44,15 @@ onMounted(() => {
     posts.value = [];
     fetchData("/posts");
 });
+
+// Modal
+
+const showModal = ref(false);
+
+const onPostSaved = (newPost) => {
+    showModal.value = false;
+    posts.value.unshift(newPost);
+};
 </script>
 
 <template>
@@ -196,4 +209,50 @@ onMounted(() => {
             </button>
         </div>
     </div>
+
+    <button
+        v-if="auth.isLoggedIn"
+        @click="showModal = true"
+        class="fixed bottom-6 right-6 lg:bottom-10 lg:right-8 z-50 flex items-center justify-center gap-2.5 p-4 rounded-full shadow-xl bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
+        title="Create New Post"
+    >
+        <div class="relative">
+            <svg
+                class="w-6 h-6 transform transition-transform duration-300 group-hover:rotate-90 group-hover:opacity-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M12 4v16m8-8H4"
+                />
+            </svg>
+
+            <svg
+                class="w-6 h-6 absolute inset-0 text-emerald-300 transform scale-0 opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+            </svg>
+        </div>
+
+        <span class="hidden lg:block font-semibold text-sm">New Story</span>
+    </button>
+
+    <PostFormModal
+        :is-open="showModal"
+        :post="null"
+        @close="showModal = false"
+        @saved="onPostSaved"
+    />
 </template>
