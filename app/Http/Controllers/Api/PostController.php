@@ -15,7 +15,11 @@ class PostController extends Controller
     {
 
         $posts = Post::with('user')
-            ->withCount('comments', 'reactions')
+            ->withCount([
+                'comments',
+                'reactions as upvotes_count' => fn($q) => $q->where('reaction_type', 'upvote'),
+                'reactions as downvotes_count' => fn($q) => $q->where('reaction_type', 'downvote')
+            ])
             ->latest()
             ->simplePaginate(10);
 
@@ -59,6 +63,14 @@ class PostController extends Controller
     {
 
         $post->load(['user', 'comments.user', 'reactions.user']);
+
+        $post->loadCount([
+            "reactions as upvotes_count" => fn($q) =>
+            $q->where('reaction_type', 'upvote'),
+            "reactions as downvotes_count" => fn($q) =>
+            $q->where('reaction_type', 'downvote'),
+        ]);
+
         // dd(collect($post)->toArray());
 
 

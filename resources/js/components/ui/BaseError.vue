@@ -11,6 +11,6 @@ const props = defineProps({
     <div
         class="p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm"
     >
-        {{ errorMessage }}
+        {{ errorMessages }}
     </div>
 </template>

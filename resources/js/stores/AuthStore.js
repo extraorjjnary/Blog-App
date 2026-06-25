@@ -11,22 +11,20 @@ export const useAuthStore = defineStore("auth", () => {
         await api.get("/axios/csrf-cookie");
         const response = await api.post("/login", credentials);
 
-        // set the reactive user state
         user.value = response.data.user;
 
-        // persist to localStorage as backup
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.removeItem("guest_id");
     };
 
     const register = async (credentials) => {
         await api.get("/axios/csrf-cookie");
         const response = await api.post("/register", credentials);
 
-        // set the reactive user state
         user.value = response.data.user;
 
-        // persist to localStorage as backup
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.removeItem("guest_id");
     };
 
     const logout = async () => {

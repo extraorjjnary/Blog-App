@@ -161,7 +161,24 @@ const onPostSaved = (newPost) => {
                                     />
                                 </svg>
                                 <span class="font-medium text-slate-800">{{
-                                    post.reactions_count
+                                    post.upvotes_count
+                                }}</span>
+
+                                <svg
+                                    class="w-4 h-4 text-rose-500"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M10 14H5.243a4.5 4.5 0 004.5 4.5H11m4-4h4.757a4.5 4.5 0 014.5 4.5H15M10 10V14"
+                                    />
+                                </svg>
+                                <span class="font-medium text-slate-800">{{
+                                    post.downvotes_count
                                 }}</span>
                             </div>
                             <div

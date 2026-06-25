@@ -10,6 +10,8 @@ class Reaction extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['user_id', 'guest_identifier', 'reaction_type'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -1,14 +1,15 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import api from "../../services/api";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from "dayjs";
-import { useReactionCounter } from "../../composables/useReactionCounter";
 import { formatDistanceToNow } from "date-fns";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
 import PostFormModal from "./PostFormModal.vue";
 import { useAuthStore } from "../../stores/AuthStore.js";
+import { useReaction } from "../../composables/useReaction.js";
+import { useGuestId } from "../../composables/useGuestId.js";
 
 // post looks like this:
 // {
@@ -17,15 +18,18 @@ import { useAuthStore } from "../../stores/AuthStore.js";
 //     title,
 //     content,
 //     user: {},
-//     comments: [],
-//     reactions: [],
+//     comments: [user],
+//     reactions: [user],
+//     upvotes_count:
+//     donwvotes_coint:
 // }
 
 const auth = useAuthStore();
 
 const post = ref(null);
 
-const { upVoteCount, downVoteCount } = useReactionCounter(post);
+const { react } = useReaction();
+const { guestId } = useGuestId();
 
 const router = useRouter();
 const route = useRoute();
@@ -36,9 +40,21 @@ const errorMessage = ref(null);
 const fetchPost = async (id) => {
     loading.value = true;
     errorMessage.value = null;
+
     try {
         const response = await api.get(`/posts/${id}`);
         post.value = response.data;
+        upvotesCount.value = response.data.upvotes_count;
+        downvotesCount.value = response.data.downvotes_count;
+
+        // find current user or guest existing reaction
+        const existing = post.value.reactions?.find((reaction) =>
+            auth.user
+                ? reaction.user_id === auth.user.id
+                : reaction.guest_identifier === guestId,
+        );
+
+        userReaction.value = existing?.reaction_type ?? null;
     } catch (error) {
         errorMessage.value =
             error.response?.data?.message ||
@@ -63,6 +79,8 @@ const onPostUpdated = (updatedPost) => {
 };
 
 const deleteLoading = ref(false);
+
+// deleting a post
 const destroy = async () => {
     deleteLoading.value = true;
     errorMessage.value = null;
@@ -78,7 +96,23 @@ const destroy = async () => {
     }
 };
 
-// reaction type counter: upvote, downvote
+// reaction
+const userReaction = ref(null);
+const upvotesCount = ref(0);
+const downvotesCount = ref(0);
+
+const reaction = async (type) => {
+    errorMessage.value = null;
+    try {
+        const response = await react(post.value, type);
+        upvotesCount.value = response.data.upvotes_count;
+        downvotesCount.value = response.data.downvotes_count;
+        userReaction.value = response.data.user_reaction;
+    } catch (error) {
+        errorMessage.value =
+            error.response?.data?.message || "Failed to react post";
+    }
+};
 </script>
 
 <template>
@@ -193,10 +227,21 @@ const destroy = async () => {
 
                 <div class="flex justify-center items-center gap-4">
                     <button
-                        class="group flex items-center gap-3 px-6 py-3 bg-emerald-50/50 border border-emerald-100 rounded-full text-emerald-700 hover:bg-emerald-50 hover:border-emerald-200 hover:-translate-y-0.5 transition-all cursor-pointer"
+                        @click="reaction('upvote')"
+                        :class="[
+                            userReaction === 'upvote'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-200 scale-105'
+                                : 'bg-emerald-50/50 border-emerald-100 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-200 hover:-translate-y-0.5',
+                        ]"
+                        class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-200 ease-in-out cursor-pointer select-none"
                     >
                         <svg
-                            class="w-6 h-6 text-emerald-500 group-hover:scale-110 transition-transform"
+                            :class="
+                                userReaction === 'upvote'
+                                    ? 'text-white scale-110'
+                                    : 'text-emerald-500 group-hover:scale-110'
+                            "
+                            class="w-6 h-6 transition-transform"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -209,16 +254,34 @@ const destroy = async () => {
                             />
                         </svg>
                         <span class="text-lg font-bold">Relatable</span>
-                        <span class="text-lg font-medium text-emerald-600">{{
-                            upVoteCount
-                        }}</span>
+                        <span
+                            :class="
+                                userReaction === 'upvote'
+                                    ? 'text-emerald-100'
+                                    : 'text-emerald-600'
+                            "
+                            class="text-lg font-medium"
+                        >
+                            {{ upvotesCount }}
+                        </span>
                     </button>
 
                     <button
-                        class="group flex items-center gap-3 px-6 py-3 bg-rose-50/50 border border-rose-100 rounded-full text-rose-700 hover:bg-rose-50 hover:border-rose-200 hover:-translate-y-0.5 transition-all cursor-pointer"
+                        @click="reaction('downvote')"
+                        :class="[
+                            userReaction === 'downvote'
+                                ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-200 scale-105'
+                                : 'bg-rose-50/50 border-rose-100 text-rose-700 hover:bg-rose-50 hover:border-rose-200 hover:-translate-y-0.5',
+                        ]"
+                        class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-200 ease-in-out cursor-pointer select-none"
                     >
                         <svg
-                            class="w-6 h-6 text-rose-400 group-hover:scale-110 transition-transform"
+                            :class="
+                                userReaction === 'downvote'
+                                    ? 'text-white scale-110'
+                                    : 'text-rose-400 group-hover:scale-110'
+                            "
+                            class="w-6 h-6 transition-transform"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -231,9 +294,16 @@ const destroy = async () => {
                             />
                         </svg>
                         <span class="text-lg font-bold">Not Relatable</span>
-                        <span class="text-lg font-medium text-rose-600">{{
-                            downVoteCount
-                        }}</span>
+                        <span
+                            :class="
+                                userReaction === 'downvote'
+                                    ? 'text-rose-100'
+                                    : 'text-rose-600'
+                            "
+                            class="text-lg font-medium"
+                        >
+                            {{ downvotesCount }}
+                        </span>
                     </button>
                 </div>
             </div>
