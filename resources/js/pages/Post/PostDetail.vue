@@ -101,16 +101,68 @@ const userReaction = ref(null);
 const upvotesCount = ref(0);
 const downvotesCount = ref(0);
 
+const reactionLoading = ref(false);
 const reaction = async (type) => {
+    if (reactionLoading.value) return;
+    reactionLoading.value = true;
+
     errorMessage.value = null;
+
+    const previousUserReaction = userReaction.value;
+    const previousUpvotesCount = upvotesCount.value;
+    const previousDownvotesCount = downvotesCount.value;
+
+    // OPTIMISTIC UI
+
+    // user toggle the same reaction = toggle off
+    if (userReaction.value === type) {
+        userReaction.value = null;
+
+        if (type === "upvote") {
+            upvotesCount.value--;
+        } else {
+            downvotesCount.value--;
+        }
+    }
+    // brand new reaction
+    else if (!userReaction.value) {
+        if (type === "upvote") {
+            upvotesCount.value++;
+        } else {
+            downvotesCount.value++;
+        }
+
+        userReaction.value = type;
+    }
+    // switching reaction
+    else {
+        if (userReaction.value === "upvote") {
+            // avoid causing -1 if upvotes count value = 0
+            if (upvotesCount.value) upvotesCount.value--;
+            downvotesCount.value++;
+        } else {
+            // avoid causing -1 if downvotes count value = 0
+            if (downvotesCount.value) downvotesCount.value--;
+            upvotesCount.value++;
+        }
+
+        userReaction.value = type;
+    }
+
     try {
         const response = await react(post.value, type);
         upvotesCount.value = response.data.upvotes_count;
         downvotesCount.value = response.data.downvotes_count;
         userReaction.value = response.data.user_reaction;
     } catch (error) {
+        userReaction.value = previousUserReaction;
+        upvotesCount.value = previousUpvotesCount;
+        downvotesCount.value = previousDownvotesCount;
+
         errorMessage.value =
             error.response?.data?.message || "Failed to react post";
+    } finally {
+        reactionLoading.value = false;
     }
 };
 </script>
@@ -227,21 +279,22 @@ const reaction = async (type) => {
 
                 <div class="flex justify-center items-center gap-4">
                     <button
+                        :disabled="reactionLoading"
                         @click="reaction('upvote')"
                         :class="[
                             userReaction === 'upvote'
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-200 scale-105'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-200 scale-105 font-bold'
                                 : 'bg-emerald-50/50 border-emerald-100 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-200 hover:-translate-y-0.5',
                         ]"
-                        class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-200 ease-in-out cursor-pointer select-none"
+                        class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-150 ease-out cursor-pointer select-none active:scale-95"
                     >
                         <svg
-                            :class="
+                            :class="[
                                 userReaction === 'upvote'
-                                    ? 'text-white scale-110'
-                                    : 'text-emerald-500 group-hover:scale-110'
-                            "
-                            class="w-6 h-6 transition-transform"
+                                    ? 'text-white scale-110 rotate-[-10deg]'
+                                    : 'text-emerald-500 group-hover:scale-110 group-hover:rotate-6',
+                            ]"
+                            class="w-6 h-6 transition-transform duration-200"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -253,35 +306,38 @@ const reaction = async (type) => {
                                 d="M14 10h4.757a4.5 4.5 0 00-4.5-4.5H13M10 14H5.243a4.5 4.5 0 004.5 4.5H11m4 4h4.757a4.5 4.5 0 01-4.5-4.5H15M10 14V10"
                             />
                         </svg>
-                        <span class="text-lg font-bold">Relatable</span>
+
+                        <span class="text-lg">Relatable</span>
+
                         <span
                             :class="
                                 userReaction === 'upvote'
                                     ? 'text-emerald-100'
                                     : 'text-emerald-600'
                             "
-                            class="text-lg font-medium"
+                            class="text-lg font-medium transition-colors"
                         >
                             {{ upvotesCount }}
                         </span>
                     </button>
 
                     <button
+                        :disabled="reactionLoading"
                         @click="reaction('downvote')"
                         :class="[
                             userReaction === 'downvote'
-                                ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-200 scale-105'
+                                ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-200 scale-105 font-bold'
                                 : 'bg-rose-50/50 border-rose-100 text-rose-700 hover:bg-rose-50 hover:border-rose-200 hover:-translate-y-0.5',
                         ]"
-                        class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-200 ease-in-out cursor-pointer select-none"
+                        class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-150 ease-out cursor-pointer select-none active:scale-95"
                     >
                         <svg
-                            :class="
+                            :class="[
                                 userReaction === 'downvote'
-                                    ? 'text-white scale-110'
-                                    : 'text-rose-400 group-hover:scale-110'
-                            "
-                            class="w-6 h-6 transition-transform"
+                                    ? 'text-white scale-110 rotate-10d'
+                                    : 'text-rose-400 group-hover:scale-110 group-hover:rotate-6',
+                            ]"
+                            class="w-6 h-6 transition-transform duration-200"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -293,14 +349,16 @@ const reaction = async (type) => {
                                 d="M10 14H5.243a4.5 4.5 0 004.5 4.5H11m4-4h4.757a4.5 4.5 0 014.5 4.5H15M10 10V14"
                             />
                         </svg>
-                        <span class="text-lg font-bold">Not Relatable</span>
+
+                        <span class="text-lg">Not Relatable</span>
+
                         <span
                             :class="
                                 userReaction === 'downvote'
                                     ? 'text-rose-100'
                                     : 'text-rose-600'
                             "
-                            class="text-lg font-medium"
+                            class="text-lg font-medium transition-colors"
                         >
                             {{ downvotesCount }}
                         </span>
