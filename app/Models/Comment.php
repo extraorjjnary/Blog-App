@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Comment extends Model
 {
     use HasFactory;
+    protected $fillable = ['user_id', 'guest_name', 'content'];
+
 
     public function user(): BelongsTo
     {

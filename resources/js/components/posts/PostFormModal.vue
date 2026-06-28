@@ -53,7 +53,7 @@ const save = async () => {
             response = await api.post("/posts", form.value);
         }
 
-        emit("saved", response.data.post);
+        emit("saved", response.data);
     } catch (error) {
         errorMessage.value =
             error.response?.data?.message ||

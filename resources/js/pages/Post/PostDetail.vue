@@ -3,13 +3,13 @@ import { onMounted, ref, watchEffect } from "vue";
 import api from "../../services/api";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from "dayjs";
-import { formatDistanceToNow } from "date-fns";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
-import PostFormModal from "./PostFormModal.vue";
+import PostFormModal from "../../components/posts/PostFormModal.vue";
 import { useAuthStore } from "../../stores/AuthStore.js";
 import { useReaction } from "../../composables/useReaction.js";
-import { useGuestId } from "../../composables/useGuestId.js";
+import { useGuest } from "../../composables/useGuest.js";
+import CommentSection from "../../components/posts/CommentSection.vue";
 
 // post looks like this:
 // {
@@ -29,7 +29,7 @@ const auth = useAuthStore();
 const post = ref(null);
 
 const { react } = useReaction();
-const { guestId } = useGuestId();
+const { guestId } = useGuest();
 
 const router = useRouter();
 const route = useRoute();
@@ -367,74 +367,8 @@ const reaction = async (type) => {
             </div>
         </article>
 
-        <section class="space-y-8">
-            <h2
-                class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3"
-            >
-                Comments
-                <span class="text-sm font-medium text-slate-400">{{
-                    post.comments.length
-                }}</span>
-            </h2>
-
-            <div
-                class="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm"
-            >
-                <textarea
-                    rows="3"
-                    placeholder="Share your thoughts on this story..."
-                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-hidden focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-400"
-                ></textarea>
-                <div class="mt-4 flex justify-end">
-                    <button
-                        class="px-5 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-950 transition-colors cursor-pointer"
-                    >
-                        Post Comment
-                    </button>
-                </div>
-            </div>
-
-            <div class="space-y-6">
-                <div
-                    v-for="comment in post.comments"
-                    class="flex items-start gap-4 p-5 bg-white border border-slate-50 rounded-2xl"
-                >
-                    <div
-                        class="shrink-0 w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-emerald-600"
-                    >
-                        {{
-                            (comment.user?.name || comment.guest_name)
-                                ?.charAt(0)
-                                ?.toUpperCase()
-                        }}
-                    </div>
-                    <div class="grow">
-                        <div
-                            class="flex items-center justify-between gap-3 mb-2"
-                        >
-                            <span
-                                class="font-semibold text-sm text-slate-900"
-                                >{{
-                                    comment.user?.name || comment.guest_name
-                                }}</span
-                            >
-                            <span class="text-xs text-slate-400"
-                                >{{
-                                    formatDistanceToNow(
-                                        new Date(comment.created_at),
-                                        { suffix: true },
-                                    )
-                                }}
-                                ago</span
-                            >
-                        </div>
-                        <p class="text-sm text-slate-700">
-                            {{ comment.content }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Comment section -->
+        <CommentSection :post="post" @saved="post.comments.unshift($event)" />
     </div>
 
     <PostFormModal

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ReactionController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,13 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 
 Route::post('/posts/{post}/reactions', ReactionController::class);
+
+Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
+Route::put('/posts/{post}', [CommentController::class, 'update']);
+Route::delete('/posts/{post}', [CommentController::class, 'destroy']);
+
+
+
 
 
 // protected routes

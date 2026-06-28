@@ -18,8 +18,8 @@ class ReactionController extends Controller
         // Validate first the incoming request
 
         $validated = $request->validate([
-            'reaction_type' => ['required', 'in:upvote,downvote'],
-            'guest_identifier' => ['nullable', 'string']
+            'guest_identifier' => ['nullable', 'string'],
+            'reaction_type' => ['required', 'in:upvote,downvote']
         ]);
 
         $user = $request->user();

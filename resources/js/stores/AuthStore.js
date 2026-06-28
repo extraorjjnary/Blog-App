@@ -15,6 +15,7 @@ export const useAuthStore = defineStore("auth", () => {
 
         localStorage.setItem("user", JSON.stringify(response.data.user));
         localStorage.removeItem("guest_id");
+        localStorage.removeItem("guest_name");
     };
 
     const register = async (credentials) => {
@@ -25,6 +26,7 @@ export const useAuthStore = defineStore("auth", () => {
 
         localStorage.setItem("user", JSON.stringify(response.data.user));
         localStorage.removeItem("guest_id");
+        localStorage.removeItem("guest_name");
     };
 
     const logout = async () => {

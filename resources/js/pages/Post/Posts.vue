@@ -4,7 +4,7 @@ import api from "../../services/api";
 import dayjs from "dayjs";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
-import PostFormModal from "./PostFormModal.vue";
+import PostFormModal from "../../components/posts/PostFormModal.vue";
 import { useAuthStore } from "../../stores/AuthStore.js";
 
 const auth = useAuthStore();

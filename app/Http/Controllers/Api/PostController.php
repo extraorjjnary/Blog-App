@@ -50,10 +50,7 @@ class PostController extends Controller
 
 
 
-        return response()->json([
-            'message' => "Post created successfully",
-            'post' => $post
-        ], 201);
+        return response()->json($post, 201);
     }
 
     /**
@@ -94,10 +91,7 @@ class PostController extends Controller
         $post->update($validatedData);
         $post->load(['user', 'comments.user', 'reactions.user']);
 
-        return response()->json([
-            'message' => 'Post updated successfully',
-            'post' => $post
-        ], 200);
+        return response()->json($post, 200);
     }
 
     /**

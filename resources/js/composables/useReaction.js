@@ -1,8 +1,8 @@
 import api from "../services/api";
-import { useGuestId } from "./useGuestId";
+import { useGuest } from "./useGuest";
 
 export function useReaction() {
-    const { guestId } = useGuestId();
+    const { guestId } = useGuest();
 
     const react = (post, reactionType) => {
         return api.post(`/posts/${post.id}/reactions`, {
