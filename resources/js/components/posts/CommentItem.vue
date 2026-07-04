@@ -138,7 +138,7 @@ const destroy = async () => {
             <div
                 v-if="
                     auth.user?.id === comment.user_id ||
-                    guestName === comment.guest_name
+                    (guestName && guestName === comment.guest_name)
                 "
                 class="flex items-center gap-4 text-sm text-slate-500"
             >
