@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -37,16 +38,51 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Comment $comment)
     {
-        //
+        $user = $request->user();
+        $guestName = $request->input('guest_name');
+
+        if ($user) {
+            $this->authorize('update', $comment);
+        } else {
+            if ($guestName !== $comment->guest_name) {
+                return response()->json(['messsage' => 'Unauthorized'], 403);
+            }
+        }
+
+        $validated = $request->validate([
+            'content' => ['required', 'string', 'min:3']
+        ]);
+
+
+        $comment->update([
+            'content' => $validated['content']
+        ]);
+
+        $comment->load('user');
+
+        return response()->json($comment, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, Comment $comment)
     {
-        //
+        $user = $request->user();
+        $guestName = $request->input('guest_name');
+
+        if ($user) {
+            $this->authorize('delete', $comment);
+        } else {
+            if ($guestName !== $comment->guest_name) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+        }
+
+        $comment->delete();
+
+        return response()->noContent();
     }
 }

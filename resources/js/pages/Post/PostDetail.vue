@@ -368,7 +368,7 @@ const reaction = async (type) => {
         </article>
 
         <!-- Comment section -->
-        <CommentSection :post="post" @saved="post.comments.unshift($event)" />
+        <CommentSection :post="post" />
     </div>
 
     <PostFormModal

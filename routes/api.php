@@ -17,8 +17,8 @@ Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::post('/posts/{post}/reactions', ReactionController::class);
 
 Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
-Route::put('/posts/{post}', [CommentController::class, 'update']);
-Route::delete('/posts/{post}', [CommentController::class, 'destroy']);
+Route::put('/comments/{comment}', [CommentController::class, 'update']);
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
 
 

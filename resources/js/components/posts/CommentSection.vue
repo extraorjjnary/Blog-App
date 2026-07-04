@@ -8,10 +8,10 @@ import BaseError from "../ui/BaseError.vue";
 const { guestName } = useGuest();
 
 const props = defineProps({ post: Object });
-const emit = defineEmits(["saved"]);
 
 const content = ref("");
 
+// Submitting a comment
 const loading = ref(false);
 const errorMessage = ref(null);
 const submitComment = async () => {
@@ -22,7 +22,7 @@ const submitComment = async () => {
             guest_name: guestName,
             content: content.value,
         });
-        emit("saved", response.data);
+        onCommentSaved(response.data);
         content.value = "";
     } catch (error) {
         errorMessage.value =
@@ -31,6 +31,28 @@ const submitComment = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+// handle after create, update, delete fetching
+
+const comments = ref([...props.post.comments]); // copy the props comments to not break the One way data flow
+
+const onCommentSaved = (newComment) => {
+    comments.value.unshift(newComment);
+};
+
+const onCommentUpdated = (updatedComment) => {
+    const index = comments.value.findIndex(
+        (comment) => comment.id === updatedComment.id,
+    );
+
+    comments.value.splice(index, 1, updatedComment); // reactive update: modify the original array
+};
+
+const onCommentDeleted = (commentId) => {
+    comments.value = comments.value.filter(
+        (comment) => comment.id !== commentId,
+    );
 };
 </script>
 
@@ -41,7 +63,7 @@ const submitComment = async () => {
         >
             Comments
             <span class="text-sm font-medium text-slate-400">{{
-                post.comments.length
+                comments.length
             }}</span>
         </h2>
 
@@ -66,6 +88,11 @@ const submitComment = async () => {
             </div>
         </form>
 
-        <CommentItem v-for="comment in post.comments" :comment="comment" />
+        <CommentItem
+            @updated="onCommentUpdated"
+            @deleted="onCommentDeleted"
+            v-for="comment in comments"
+            :comment="comment"
+        />
     </section>
 </template>
