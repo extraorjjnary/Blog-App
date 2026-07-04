@@ -6,7 +6,6 @@ import { useAuthStore } from "../stores/AuthStore";
 const auth = useAuthStore();
 const router = useRouter();
 
-// Dummy logout handler - you'll wire your Sanctum Axios call here later!
 const logout = async () => {
     try {
         await auth.logout();
@@ -64,7 +63,6 @@ const logout = async () => {
                         <span class="text-xs text-slate-400">Author</span>
                     </div>
 
-                    <!-- Logout Button (Ready for your Axios method later) -->
                     <button
                         @click="logout"
                         class="inline-flex items-center px-3.5 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all cursor-pointer"
@@ -78,7 +76,6 @@ const logout = async () => {
                     v-if="!auth.isLoggedIn"
                     class="flex items-center space-x-4"
                 >
-                    <!-- Register Button  -->
                     <RouterLink
                         to="/register"
                         class="inline-flex items-center px-3.5 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all cursor-pointer"
@@ -86,7 +83,6 @@ const logout = async () => {
                         Register
                     </RouterLink>
 
-                    <!-- Login Button **Display only this when the user is guest** -->
                     <RouterLink
                         to="/login"
                         class="inline-flex items-center px-3.5 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all cursor-pointer"

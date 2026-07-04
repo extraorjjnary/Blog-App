@@ -136,10 +136,7 @@ const destroy = async () => {
             </div>
 
             <div
-                v-if="
-                    auth.user?.id === comment.user_id ||
-                    (guestName && guestName === comment.guest_name)
-                "
+                v-if="auth.user?.id === comment.user_id"
                 class="flex items-center gap-4 text-sm text-slate-500"
             >
                 <!-- Edit Button -->
