@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref } from "vue";
 import api from "../../services/api";
 import { useRoute, useRouter } from "vue-router";
 import dayjs from "dayjs";
@@ -25,7 +25,6 @@ import CommentSection from "../../components/posts/CommentSection.vue";
 // }
 
 const auth = useAuthStore();
-
 const post = ref(null);
 
 const { react } = useReaction();
@@ -47,7 +46,7 @@ const fetchPost = async (id) => {
         upvotesCount.value = response.data.upvotes_count;
         downvotesCount.value = response.data.downvotes_count;
 
-        // find current user or guest existing reaction
+        // Find current user or guest existing reaction
         const existing = post.value.reactions?.find((reaction) =>
             auth.user
                 ? reaction.user_id === auth.user.id
@@ -66,11 +65,10 @@ const fetchPost = async (id) => {
 
 onMounted(() => {
     const id = route.params.id;
-
     fetchPost(id);
 });
 
-// Modal
+// Modal Toggles
 const showModal = ref(false);
 
 const onPostUpdated = (updatedPost) => {
@@ -80,12 +78,15 @@ const onPostUpdated = (updatedPost) => {
 
 const deleteLoading = ref(false);
 
-// deleting a post
+// Deleting a post
 const destroy = async () => {
+    if (!confirm("Are you sure you want to delete this experience, bro?"))
+        return;
+
     deleteLoading.value = true;
     errorMessage.value = null;
     try {
-        const response = await api.delete(`/posts/${post.value.id}`);
+        await api.delete(`/posts/${post.value.id}`);
 
         router.push({ name: "posts.index" });
     } catch (error) {
@@ -96,16 +97,15 @@ const destroy = async () => {
     }
 };
 
-// reaction
+// Reactions Reactive State
 const userReaction = ref(null);
 const upvotesCount = ref(0);
 const downvotesCount = ref(0);
-
 const reactionLoading = ref(false);
+
 const reaction = async (type) => {
     if (reactionLoading.value) return;
     reactionLoading.value = true;
-
     errorMessage.value = null;
 
     const previousUserReaction = userReaction.value;
@@ -117,7 +117,6 @@ const reaction = async (type) => {
     // user toggle the same reaction = toggle off
     if (userReaction.value === type) {
         userReaction.value = null;
-
         if (type === "upvote") {
             upvotesCount.value--;
         } else {
@@ -131,7 +130,6 @@ const reaction = async (type) => {
         } else {
             downvotesCount.value++;
         }
-
         userReaction.value = type;
     }
     // switching reaction
@@ -145,7 +143,6 @@ const reaction = async (type) => {
             if (downvotesCount.value) downvotesCount.value--;
             upvotesCount.value++;
         }
-
         userReaction.value = type;
     }
 
@@ -155,12 +152,14 @@ const reaction = async (type) => {
         downvotesCount.value = response.data.downvotes_count;
         userReaction.value = response.data.user_reaction;
     } catch (error) {
+        // Rollback state if server request drops
         userReaction.value = previousUserReaction;
         upvotesCount.value = previousUpvotesCount;
         downvotesCount.value = previousDownvotesCount;
 
         errorMessage.value =
-            error.response?.data?.message || "Failed to react post";
+            error.response?.data?.message ||
+            "Failed to sync reaction with server.";
     } finally {
         reactionLoading.value = false;
     }
@@ -170,52 +169,57 @@ const reaction = async (type) => {
 <template>
     <BaseLoader v-if="loading" />
 
-    <div v-if="post" class="max-w-4xl mx-auto space-y-12">
+    <div v-if="post" class="max-w-4xl mx-auto space-y-12 text-bro-light">
         <BaseError v-if="errorMessage" :error-messages="errorMessage" />
+
         <article
-            class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm"
+            class="bg-bro-surface border border-bro-border p-8 rounded-2xl shadow-md"
         >
-            <header class="mb-10 pb-8 border-b border-slate-100">
+            <header class="mb-10 pb-8 border-b border-bro-border">
                 <h1
-                    class="text-4xl font-extrabold text-slate-950 tracking-tighter leading-tight mb-5"
+                    class="text-4xl font-extrabold text-bro-light tracking-tighter leading-tight mb-5"
                 >
                     {{ post.title }}
                 </h1>
 
                 <div
-                    class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500"
+                    class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-bro-muted"
                 >
                     <div class="flex items-center gap-2.5">
                         <div
-                            class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-indigo-600 text-lg"
+                            class="w-9 h-9 rounded-full bg-bro-bg border border-bro-border flex items-center justify-center font-bold text-bro-crimson text-lg"
                         >
                             {{ post.user.name.charAt(0).toUpperCase() }}
                         </div>
-                        <span class="font-semibold text-slate-900"
-                            >{{ post.user.name }} (Author)</span
+                        <span class="font-semibold text-bro-light"
+                            >{{ post.user.name }}
+                            <span class="text-xs text-bro-muted/60 font-normal"
+                                >(Author)</span
+                            ></span
                         >
                     </div>
-                    <span class="text-slate-300">|</span>
+                    <span class="text-bro-border">|</span>
                     <time
                         :datetime="dayjs(post.created_at).format('YYYY-MM-DD')"
-                        title="Published on October 27, 2023"
-                        >{{ dayjs(post.created_at).format("MMM-D-YYYY") }}</time
+                        >{{
+                            dayjs(post.created_at).format("MMMM D, YYYY")
+                        }}</time
                     >
-                    <span class="text-slate-300">|</span>
+                    <span class="text-bro-border">|</span>
                     <span
-                        class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-600 text-xs px-3 py-1 rounded-full font-medium"
+                        class="inline-flex items-center gap-1.5 bg-bro-bg text-bro-muted text-xs px-3 py-1 rounded-full font-medium border border-bro-border"
                     >
-                        Career & Growth
+                        Brotherhood Feed
                     </span>
 
                     <div
                         v-if="auth.user?.id === post.user_id"
-                        class="flex items-center gap-2"
+                        class="flex items-center gap-2 ml-auto"
                     >
                         <button
                             @click="showModal = true"
                             type="button"
-                            class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100 text-slate-600 text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer"
+                            class="inline-flex items-center gap-1.5 bg-bro-bg border border-bro-border hover:bg-bro-border hover:text-bro-light text-bro-muted text-xs px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer"
                         >
                             <svg
                                 class="w-3.5 h-3.5"
@@ -230,14 +234,14 @@ const reaction = async (type) => {
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                                 />
                             </svg>
-                            <span>Edit Post</span>
+                            <span>Edit</span>
                         </button>
 
                         <button
                             @click="destroy"
                             :disabled="deleteLoading"
                             type="button"
-                            class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 text-slate-600 text-xs px-3 py-1 rounded-full font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="inline-flex items-center gap-1.5 bg-bro-bg border border-bro-border hover:bg-red-950/40 hover:text-red-400 hover:border-red-900/50 text-bro-muted text-xs px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <svg
                                 class="w-3.5 h-3.5"
@@ -261,17 +265,15 @@ const reaction = async (type) => {
             </header>
 
             <div
-                class="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-5"
+                class="text-bro-muted leading-relaxed text-base space-y-6 whitespace-pre-line font-medium"
             >
-                <p>
-                    {{ post.content }}
-                </p>
+                {{ post.content }}
             </div>
 
-            <div class="mt-12 pt-8 border-t border-slate-100">
+            <div class="mt-12 pt-8 border-t border-bro-border">
                 <div class="text-center mb-6">
                     <h3
-                        class="text-sm font-semibold text-slate-500 uppercase tracking-widest"
+                        class="text-xs font-bold text-bro-muted/40 uppercase tracking-widest"
                     >
                         How relatable is this experience?
                     </h3>
@@ -283,8 +285,8 @@ const reaction = async (type) => {
                         @click="reaction('upvote')"
                         :class="[
                             userReaction === 'upvote'
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-200 scale-105 font-bold'
-                                : 'bg-emerald-50/50 border-emerald-100 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-200 hover:-translate-y-0.5',
+                                ? 'bg-bro-crimson text-white border-bro-crimson shadow-lg shadow-bro-crimson/20 scale-105 font-bold'
+                                : 'bg-bro-bg border-bro-border text-emerald-500 hover:bg-bro-surface hover:border-emerald-500/30 hover:-translate-y-0.5',
                         ]"
                         class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-150 ease-out cursor-pointer select-none active:scale-95"
                     >
@@ -307,16 +309,8 @@ const reaction = async (type) => {
                             />
                         </svg>
 
-                        <span class="text-lg">Relatable</span>
-
-                        <span
-                            :class="
-                                userReaction === 'upvote'
-                                    ? 'text-emerald-100'
-                                    : 'text-emerald-600'
-                            "
-                            class="text-lg font-medium transition-colors"
-                        >
+                        <span class="text-sm">Relatable</span>
+                        <span class="text-sm font-black transition-colors">
                             {{ upvotesCount }}
                         </span>
                     </button>
@@ -326,15 +320,15 @@ const reaction = async (type) => {
                         @click="reaction('downvote')"
                         :class="[
                             userReaction === 'downvote'
-                                ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-200 scale-105 font-bold'
-                                : 'bg-rose-50/50 border-rose-100 text-rose-700 hover:bg-rose-50 hover:border-rose-200 hover:-translate-y-0.5',
+                                ? 'bg-bro-crimson text-white border-bro-crimson shadow-lg shadow-bro-crimson/20 scale-105 font-bold'
+                                : 'bg-bro-bg border-bro-border text-rose-500 hover:bg-bro-surface hover:border-rose-500/30 hover:-translate-y-0.5',
                         ]"
                         class="group flex items-center gap-3 px-6 py-3 border rounded-full font-semibold transition-all duration-150 ease-out cursor-pointer select-none active:scale-95"
                     >
                         <svg
                             :class="[
                                 userReaction === 'downvote'
-                                    ? 'text-white scale-110 rotate-10d'
+                                    ? 'text-white scale-110 rotate-10'
                                     : 'text-rose-400 group-hover:scale-110 group-hover:rotate-6',
                             ]"
                             class="w-6 h-6 transition-transform duration-200"
@@ -350,16 +344,8 @@ const reaction = async (type) => {
                             />
                         </svg>
 
-                        <span class="text-lg">Not Relatable</span>
-
-                        <span
-                            :class="
-                                userReaction === 'downvote'
-                                    ? 'text-rose-100'
-                                    : 'text-rose-600'
-                            "
-                            class="text-lg font-medium transition-colors"
-                        >
+                        <span class="text-sm">Not Relatable</span>
+                        <span class="text-sm font-black transition-colors">
                             {{ downvotesCount }}
                         </span>
                     </button>
@@ -367,7 +353,6 @@ const reaction = async (type) => {
             </div>
         </article>
 
-        <!-- Comment section -->
         <CommentSection :post="post" />
     </div>
 

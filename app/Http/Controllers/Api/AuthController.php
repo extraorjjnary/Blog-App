@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => "Invalid Credentials. Please try again. Mango!"
+                'message' => "Invalid Credentials. Please try again."
             ], 401);
         }
 

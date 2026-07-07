@@ -19,6 +19,7 @@ const form = ref({
     content: "",
 });
 
+// Watch until prop shifts to auto-populate or clear form state
 watch(
     () => props.post,
     (post) => {
@@ -26,6 +27,12 @@ watch(
             form.value = {
                 title: post.title,
                 content: post.content,
+            };
+        } else {
+            // Reset inputs if user shifts from edit mode back to create mode
+            form.value = {
+                title: "",
+                content: "",
             };
         }
     },
@@ -91,27 +98,31 @@ watch(
                 v-if="isOpen && auth.isLoggedIn"
                 @keyup.esc="emit('close')"
                 @click.self="emit('close')"
-                class="fixed inset-0 z-100 flex items-center justify-center px-4 overflow-y-auto bg-slate-900/60 backdrop-blur-xs"
+                class="fixed inset-0 z-100 flex items-center justify-center px-4 overflow-y-auto bg-black/70 backdrop-blur-xs"
                 aria-labelledby="modal-title"
                 role="dialog"
                 aria-modal="true"
             >
                 <div
-                    class="relative w-full max-w-2xl bg-white p-8 rounded-2xl border border-slate-100 shadow-2xl shadow-slate-900/10 transform transition-all space-y-8 my-8"
+                    class="relative w-full max-w-2xl bg-bro-surface p-8 rounded-2xl border border-bro-border shadow-2xl transform transition-all space-y-8 my-8 text-bro-light"
                 >
-                    <!-- Error -->
                     <BaseError
                         v-if="errorMessage"
                         :error-messages="errorMessage"
                     />
+
                     <div class="text-center">
                         <h3
-                            class="text-3xl font-extrabold text-slate-900 tracking-tight"
+                            class="text-3xl font-extrabold text-bro-light tracking-tight"
                             id="modal-title"
                         >
-                            Share a Relatable Story
+                            {{
+                                !isEditMode
+                                    ? "Share a Relatable Story"
+                                    : "Edit Your Experience"
+                            }}
                         </h3>
-                        <p class="mt-2 text-sm text-slate-500 max-w-md mx-auto">
+                        <p class="mt-2 text-sm text-bro-muted max-w-md mx-auto">
                             BroCore thrives on honesty. Share an experience,
                             struggle, or lesson learned that other men can
                             connect with.
@@ -123,7 +134,7 @@ watch(
                             <div>
                                 <label
                                     for="title"
-                                    class="block text-sm font-semibold text-slate-700 mb-1.5"
+                                    class="block text-sm font-semibold text-bro-muted mb-1.5"
                                     >Post Title (Catchy & Relatable)</label
                                 >
                                 <input
@@ -132,7 +143,7 @@ watch(
                                     id="title"
                                     type="text"
                                     required
-                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-hidden focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-400"
+                                    class="w-full px-3.5 py-2.5 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/30"
                                     placeholder="e.g., Finally started training BJJ at 30..."
                                 />
                             </div>
@@ -140,37 +151,46 @@ watch(
                             <div>
                                 <label
                                     for="content"
-                                    class="block text-sm font-semibold text-slate-700 mb-1.5"
+                                    class="block text-sm font-semibold text-bro-muted mb-1.5"
                                     >Your Experience (The Story)</label
                                 >
                                 <textarea
                                     v-model="form.content"
                                     id="content"
                                     required
-                                    rows="12"
-                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-hidden focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-400 resize-none"
+                                    rows="10"
+                                    class="w-full px-3.5 py-2.5 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/30 resize-none"
                                     placeholder="Tell us what happened, what you learned, how it felt..."
                                 ></textarea>
                             </div>
                         </div>
 
                         <div
-                            class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100"
+                            class="flex items-center justify-end gap-3 pt-6 border-t border-bro-border"
                         >
                             <button
                                 @click="emit('close')"
                                 type="button"
-                                class="px-5 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-800 transition-colors cursor-pointer"
+                                class="px-5 py-2.5 border border-bro-border rounded-xl text-sm font-semibold text-bro-muted hover:bg-bro-border hover:text-bro-light transition-colors cursor-pointer"
                             >
                                 Cancel
                             </button>
 
                             <button
                                 type="submit"
-                                class="px-5 py-2.5 border border-transparent rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-4 focus:ring-indigo-500/20 active:bg-indigo-800 transition-all cursor-pointer shadow-xs shadow-indigo-600/10"
+                                :disabled="loading"
+                                class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-bro-crimson hover:bg-bro-crimson-hover focus:outline-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md shadow-bro-crimson/10 flex items-center gap-2"
                             >
+                                <div
+                                    v-if="loading"
+                                    class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+                                ></div>
                                 {{
-                                    !isEditMode ? "Publish Post" : "Update Post"
+                                    loading
+                                        ? "Saving..."
+                                        : !isEditMode
+                                          ? "Publish Post"
+                                          : "Update Post"
                                 }}
                             </button>
                         </div>
@@ -179,7 +199,7 @@ watch(
                     <button
                         @click="emit('close')"
                         type="button"
-                        class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                        class="absolute top-6 right-6 text-bro-muted hover:text-bro-light transition-colors cursor-pointer"
                         aria-label="Close modal"
                     >
                         <svg

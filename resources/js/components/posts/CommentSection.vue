@@ -34,7 +34,6 @@ const submitComment = async () => {
 };
 
 // handle after create, update, delete fetching
-
 const comments = ref([...props.post.comments]); // copy the props comments to not break the One way data flow
 
 const onCommentSaved = (newComment) => {
@@ -57,42 +56,50 @@ const onCommentDeleted = (commentId) => {
 </script>
 
 <template>
-    <section class="space-y-8">
+    <section class="space-y-6">
         <h2
-            class="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3"
+            class="text-xl font-bold text-bro-light tracking-tight flex items-center gap-3"
         >
-            Comments
-            <span class="text-sm font-medium text-slate-400">{{
-                comments.length
-            }}</span>
+            Discussion
+            <span
+                class="text-xs px-2 py-0.5 rounded-md bg-bro-border font-bold text-bro-muted border border-bro-border/60"
+            >
+                {{ comments.length }}
+            </span>
         </h2>
 
+        <BaseError v-if="errorMessage" :error-messages="errorMessage" />
+
         <form
-            class="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm"
+            class="bg-bro-surface border border-bro-border p-5 rounded-2xl shadow-sm space-y-4"
             @submit.prevent="submitComment"
         >
             <textarea
                 v-model="content"
                 rows="3"
-                placeholder="Share your thoughts on this story..."
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-hidden focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-400"
+                placeholder="Share your perspective or thoughts..."
+                class="w-full px-4 py-3 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson transition-all placeholder-bro-muted/40 resize-none font-medium"
             ></textarea>
-            <div class="mt-4 flex justify-end">
+
+            <div class="flex justify-end">
                 <button
                     type="submit"
-                    :disabled="loading"
-                    class="px-5 py-2.5 bg-slate-800 text-white text-sm font-semibold rounded-xl hover:bg-slate-950 transition-colors cursor-pointer"
+                    :disabled="loading || !content.trim()"
+                    class="px-5 py-2.5 bg-bro-crimson hover:bg-red-800 disabled:bg-bro-border disabled:text-bro-muted/40 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer disabled:cursor-not-allowed shadow-md shadow-red-950/20"
                 >
                     {{ loading ? "Posting.." : "Post Comment" }}
                 </button>
             </div>
         </form>
 
-        <CommentItem
-            @updated="onCommentUpdated"
-            @deleted="onCommentDeleted"
-            v-for="comment in comments"
-            :comment="comment"
-        />
+        <div class="space-y-4">
+            <CommentItem
+                @updated="onCommentUpdated"
+                @deleted="onCommentDeleted"
+                v-for="comment in comments"
+                :key="comment.id"
+                :comment="comment"
+            />
+        </div>
     </section>
 </template>

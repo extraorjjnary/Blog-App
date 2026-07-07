@@ -9,13 +9,12 @@ const emit = defineEmits(["click"]);
 </script>
 
 <template>
-    <!-- Submit Button -->
     <div>
         <button
             type="submit"
             :disabled="isLoading"
             @click="emit('click')"
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-4 focus:ring-indigo-500/20 active:bg-indigo-800 transition-all cursor-pointer shadow-xs shadow-indigo-600/10"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-sm font-bold text-white bg-bro-crimson hover:bg-bro-crimson-hover focus:outline-hidden focus:ring-4 focus:ring-bro-crimson/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md shadow-bro-crimson/10 active:scale-95 select-none"
         >
             <slot />
         </button>

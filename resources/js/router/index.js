@@ -6,10 +6,15 @@ const router = createRouter({
     routes: [
         {
             path: "/",
-            component: () => import("../components/layouts/DefaultLayout.vue"), // Contains Navbar + Footer + Inner RouterView
+            component: () => import("../components/layouts/DefaultLayout.vue"), // Contains Navbar + Inner RouterView
             children: [
                 {
                     path: "",
+                    name: "landing",
+                    component: () => import("../pages/LandingPage.vue"),
+                },
+                {
+                    path: "/posts",
                     name: "posts.index",
                     component: () => import("../pages/Post/Posts.vue"),
                 },

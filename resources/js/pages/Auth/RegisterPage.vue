@@ -9,7 +9,6 @@ import { useAuthStore } from "../../stores/AuthStore.js";
 const router = useRouter();
 const auth = useAuthStore();
 
-// Reactive state to hold registration form parameters
 const credentials = ref({
     name: "",
     email: "",
@@ -20,7 +19,6 @@ const credentials = ref({
 const loading = ref(false);
 const error = ref(null);
 
-// TYPO FIXED: renamed from regsiter to register
 const register = async () => {
     loading.value = true;
     error.value = null;
@@ -37,24 +35,30 @@ const register = async () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-slate-50 relative flex flex-col">
+    <div class="min-h-screen bg-bro-bg text-bro-light relative flex flex-col">
         <header
             class="fixed top-0 left-0 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center z-10"
         >
             <RouterLink
                 :to="{ name: 'posts.index' }"
-                class="text-xl font-bold text-indigo-600 tracking-tight hover:opacity-80 transition-opacity"
+                class="text-xl font-black tracking-tight hover:opacity-80 transition-opacity"
             >
-                DevBlog<span class="text-slate-800">.io</span>
+                <span class="text-bro-light">Bro</span
+                ><span class="text-bro-crimson">Core</span>
             </RouterLink>
         </header>
 
-        <main class="grow flex items-center justify-center pt-16 pb-6">
+        <main class="grow flex items-center justify-center pt-16 pb-6 px-4">
             <BaseCard
-                title="Create Author Account"
-                sub-title="Get started with your fresh blog."
+                title="Create Account"
+                sub-title="Join the brotherhood and claim your spot."
             >
-                <p v-if="error" class="text-red-500 mb-4">{{ error }}</p>
+                <p
+                    v-if="error"
+                    class="text-bro-crimson-hover text-sm font-semibold mb-4 bg-bro-crimson/10 border border-bro-crimson/20 p-3 rounded-lg"
+                >
+                    {{ error }}
+                </p>
 
                 <form class="mt-8 space-y-6" @submit.prevent="register">
                     <BaseInput
@@ -95,22 +99,22 @@ const register = async () => {
 
                 <template #footer>
                     <div class="space-y-4">
-                        <p class="text-sm text-slate-500">
+                        <p class="text-sm text-bro-muted">
                             Already have an Account?
                             <RouterLink
                                 to="/login"
-                                class="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors"
+                                class="font-semibold text-bro-crimson hover:text-bro-crimson-hover transition-colors"
                             >
                                 Login instead
                             </RouterLink>
                         </p>
 
                         <div
-                            class="pt-3 border-t border-slate-100 flex justify-center"
+                            class="pt-3 border-t border-bro-border flex justify-center"
                         >
                             <RouterLink
                                 :to="{ name: 'posts.index' }"
-                                class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors"
+                                class="inline-flex items-center gap-1.5 text-xs font-medium text-bro-muted hover:text-bro-light transition-colors"
                             >
                                 <svg
                                     class="w-3.5 h-3.5"

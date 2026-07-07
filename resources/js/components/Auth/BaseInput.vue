@@ -15,20 +15,18 @@ const model = defineModel();
 </script>
 
 <template>
-    <!-- Input Group -->
-    <div class="space-y-4">
+    <div class="space-y-2">
         <label
             :for="id"
-            class="block text-sm font-semibold text-slate-700 mb-1.5"
+            class="block text-sm font-semibold text-bro-muted mb-1.5"
             >{{ label }}</label
         >
-        <!-- No emit yet -->
+
         <input
             :id="id"
             :type="type"
             required
-            :value="modelValue"
-            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-hidden focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder:text-slate-400"
+            class="w-full px-4 py-3 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/40 font-medium"
             :placeholder="placeholder"
             v-model="model"
         />
