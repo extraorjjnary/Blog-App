@@ -59,9 +59,9 @@ const logout = async () => {
                 <!-- Authenticated State -->
                 <div v-if="auth.isLoggedIn" class="flex items-center space-x-4">
                     <div class="hidden sm:flex flex-col text-right">
-                        <span class="text-sm font-medium text-bro-light"
-                            >Utol Developer</span
-                        >
+                        <span class="text-sm font-medium text-bro-light">{{
+                            auth.user?.name
+                        }}</span>
                         <span class="text-xs text-bro-muted">Author</span>
                     </div>
                     <button
