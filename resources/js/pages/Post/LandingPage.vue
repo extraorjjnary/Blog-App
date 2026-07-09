@@ -30,12 +30,6 @@ const goToCreate = () => {
             class="max-w-7xl mx-auto px-6 py-16 md:py-24 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10"
         >
             <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
-                <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold tracking-wider text-bro-crimson uppercase bg-bro-surface border border-bro-border rounded-full"
-                >
-                    Built for the brotherhood
-                </span>
-
                 <h1
                     class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.1]"
                 >

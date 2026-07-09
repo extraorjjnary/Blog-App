@@ -60,6 +60,13 @@ const save = async () => {
             response = await api.post("/posts", form.value);
         }
 
+        // Reset inputs if after creating a brandnew post
+
+        form.value = {
+            title: "",
+            content: "",
+        };
+
         emit("saved", response.data);
     } catch (error) {
         errorMessage.value =

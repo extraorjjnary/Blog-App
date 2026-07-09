@@ -8,7 +8,7 @@ const router = useRouter();
 const logout = async () => {
     try {
         await auth.logout();
-        router.push("/");
+        router.push({ name: "landing" });
     } catch (err) {
         console.error("Logout error:", err);
     }
@@ -25,7 +25,7 @@ const logout = async () => {
                 <div class="flex">
                     <div class="shrink-0 flex items-center">
                         <RouterLink
-                            to="/"
+                            :to="{ name: 'landing' }"
                             class="text-xl font-black tracking-tight hover:opacity-90 transition-opacity"
                         >
                             <span class="text-bro-light">Bro</span
@@ -38,7 +38,7 @@ const logout = async () => {
                         class="hidden sm:ml-8 sm:flex sm:space-x-4 items-center"
                     >
                         <RouterLink
-                            to="/"
+                            :to="{ name: 'dashboard' }"
                             class="px-3 py-2 rounded-lg text-sm font-medium text-bro-muted hover:text-bro-light hover:bg-bro-bg/50 transition-colors"
                             active-class="text-bro-crimson bg-bro-bg"
                         >
@@ -75,13 +75,13 @@ const logout = async () => {
                 <!-- Guest State -->
                 <div v-else class="flex items-center space-x-3">
                     <RouterLink
-                        to="/register"
+                        :to="{ name: 'register' }"
                         class="inline-flex items-center px-3.5 py-2 border border-bro-border rounded-lg text-sm font-medium text-bro-light bg-bro-bg hover:bg-bro-surface transition-all active:scale-95"
                     >
                         Register
                     </RouterLink>
                     <RouterLink
-                        to="/login"
+                        :to="{ name: 'login' }"
                         class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-bold text-bro-light bg-bro-crimson hover:bg-bro-crimson-hover transition-all shadow-md shadow-bro-crimson/10 active:scale-95"
                     >
                         Login
