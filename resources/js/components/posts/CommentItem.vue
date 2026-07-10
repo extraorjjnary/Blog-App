@@ -1,10 +1,10 @@
 <script setup>
 import { nextTick, ref } from "vue";
-import { formatDistanceToNow } from "date-fns";
 import { useAuthStore } from "../../stores/AuthStore";
 import { useGuest } from "../../composables/useGuest";
 import api from "../../services/api";
 import BaseError from "../ui/BaseError.vue";
+import dayjs from "../../../utils/dayjs.js";
 
 const { guestName } = useGuest();
 const auth = useAuthStore();
@@ -106,11 +106,7 @@ const destroy = async () => {
                     <span
                         class="text-xs text-bro-muted/40 shrink-0 font-medium"
                     >
-                        {{
-                            formatDistanceToNow(new Date(comment.created_at), {
-                                addSuffix: true,
-                            })
-                        }}
+                        {{ dayjs(comment.created_at).fromNow() }}
                     </span>
                 </div>
 
@@ -141,7 +137,7 @@ const destroy = async () => {
 
                 <p
                     v-else
-                    class="text-sm text-bro-muted whitespace-pre-wrap leading-relaxed font-medium"
+                    class="text-sm text-bro-muted whitespace-pre-wrap leading-relaxed wrap-break-word font-medium"
                 >
                     {{ comment.content }}
                 </p>

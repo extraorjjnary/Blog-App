@@ -17,7 +17,6 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 
 
-
 // public reaction
 Route::post('/posts/{post}/reactions', ReactionController::class);
 

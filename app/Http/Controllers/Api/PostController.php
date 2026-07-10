@@ -29,8 +29,10 @@ class PostController extends Controller
         return response()->json($posts, 200);
     }
 
-    public function index()
+    public function index(Request $request)
     {
+
+        $limit = $request->query('limit', 10);
 
         $posts = Post::with('user')
             ->withCount([
@@ -39,7 +41,7 @@ class PostController extends Controller
                 'reactions as downvotes_count' => fn($q) => $q->where('reaction_type', 'downvote')
             ])
             ->latest()
-            ->simplePaginate(10);
+            ->simplePaginate($limit);
 
         // dd(collect($posts)->toArray());
 

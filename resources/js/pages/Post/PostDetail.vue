@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import api from "../../services/api";
 import { useRoute, useRouter } from "vue-router";
-import dayjs from "dayjs";
+import dayjs from "../../../utils/dayjs.js";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
 import PostFormModal from "../../components/posts/PostFormModal.vue";
@@ -265,7 +265,7 @@ const reaction = async (type) => {
             </header>
 
             <div
-                class="text-bro-muted leading-relaxed text-base space-y-6 whitespace-pre-line font-medium"
+                class="text-bro-muted leading-relaxed text-base space-y-6 whitespace-pre-line wrap-break-word font-medium"
             >
                 {{ post.content }}
             </div>

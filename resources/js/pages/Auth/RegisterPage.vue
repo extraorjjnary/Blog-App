@@ -40,7 +40,7 @@ const register = async () => {
             class="fixed top-0 left-0 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center z-10"
         >
             <RouterLink
-                :to="{ name: 'posts.index' }"
+                :to="{ name: 'landing' }"
                 class="text-xl font-black tracking-tight hover:opacity-80 transition-opacity"
             >
                 <span class="text-bro-light">Bro</span

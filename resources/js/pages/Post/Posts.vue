@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import api from "../../services/api";
-import dayjs from "dayjs";
+import dayjs from "../../../utils/dayjs.js";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
 import PostFormModal from "../../components/posts/PostFormModal.vue";
 import { useAuthStore } from "../../stores/AuthStore.js";
+import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
 
 const auth = useAuthStore();
 
@@ -52,6 +53,9 @@ const showModal = ref(false);
 const onPostSaved = (newPost) => {
     showModal.value = false;
     posts.value.unshift(newPost);
+
+    posts.value = [];
+    fetchData("/posts");
 };
 </script>
 
@@ -136,7 +140,7 @@ const onPostSaved = (newPost) => {
                         </h3>
 
                         <p
-                            class="text-sm text-bro-muted mb-5 line-clamp-3 font-medium leading-relaxed"
+                            class="text-sm text-bro-muted mb-5 line-clamp-3 wrap-break-word font-medium leading-relaxed"
                         >
                             {{ post.content }}
                         </p>
@@ -215,22 +219,11 @@ const onPostSaved = (newPost) => {
         </div>
 
         <!-- Load More Section Button Trigger -->
-        <div v-if="nextPageUrl" class="flex justify-center pt-4">
-            <button
-                @click="loadMore"
-                :disabled="loadingMore"
-                class="px-6 py-3 rounded-xl font-bold text-white bg-bro-crimson hover:bg-bro-crimson-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-bro-crimson/10 cursor-pointer active:scale-95"
-            >
-                <div class="flex justify-center items-center gap-3">
-                    <div
-                        v-if="loadingMore"
-                        class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
-                    ></div>
-
-                    {{ loadingMore ? "Loading..." : "Load More Stories" }}
-                </div>
-            </button>
-        </div>
+        <LoadMoreBtn
+            v-if="nextPageUrl"
+            :loading="loadingMore"
+            :load-more="loadMore"
+        />
     </div>
 
     <button
