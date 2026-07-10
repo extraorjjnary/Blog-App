@@ -11,6 +11,24 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
+    public function myPosts(Request $request)
+    {
+        $posts = $request->user()->posts()
+            ->with('user')
+            ->withCount([
+                'comments',
+                'reactions as upvotes_count' => fn($q) => $q->where('reaction_type', 'upvote'),
+                'reactions as downvotes_count' => fn($q) => $q->where('reaction_type', 'downvote')
+            ])
+            ->latest()
+            ->simplePaginate(10);
+
+
+        return response()->json($posts, 200);
+    }
+
     public function index()
     {
 
@@ -26,8 +44,10 @@ class PostController extends Controller
         // dd(collect($posts)->toArray());
 
 
-        return response()->json($posts);
+        return response()->json($posts, 200);
     }
+
+
 
     /**
      * Store a newly created resource in storage.

@@ -16,6 +16,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 
+
+
 // public reaction
 Route::post('/posts/{post}/reactions', ReactionController::class);
 
@@ -23,6 +25,7 @@ Route::post('/posts/{post}/reactions', ReactionController::class);
 Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
 Route::put('/comments/{comment}', [CommentController::class, 'update']);
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+
 
 
 
@@ -36,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
 
+    Route::get('/my-posts', [PostController::class, 'myPosts']);
 
     // protected auth
     Route::post('/logout', [AuthController::class, 'logout']);
