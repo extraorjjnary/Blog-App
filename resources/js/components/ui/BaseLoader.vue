@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import { Loader2 } from "@lucide/vue";
+
 defineProps({
     message: {
         type: String,
@@ -9,16 +11,14 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex items-center justify-center min-h-[60vh]">
-        <div class="flex flex-col items-center gap-4">
-            <div
-                class="w-10 h-10 border-[3px] border-bro-border border-t-bro-crimson rounded-full animate-spin"
-            ></div>
+    <div class="flex items-center justify-center min-h-[60vh] select-none">
+        <div class="flex flex-col items-center gap-3">
+            <Loader2 class="w-10 h-10 text-bro-crimson animate-spin stroke-2" />
 
             <p
-                class="text-sm font-bold tracking-widest text-bro-muted/40 animate-pulse"
+                class="text-xs font-mono font-bold uppercase tracking-widest text-bro-muted/50 animate-pulse mt-1"
             >
-                {{ message }}
+                {{ message || "LOADING..." }}
             </p>
         </div>
     </div>

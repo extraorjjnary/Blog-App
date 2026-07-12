@@ -5,6 +5,7 @@ import { useGuest } from "../../composables/useGuest";
 import api from "../../services/api";
 import BaseError from "../ui/BaseError.vue";
 import dayjs from "../../../utils/dayjs.js";
+import { Check, SquarePen, Trash2 } from "@lucide/vue";
 
 const { guestName } = useGuest();
 const auth = useAuthStore();
@@ -144,53 +145,46 @@ const destroy = async () => {
 
                 <div
                     v-if="auth.user?.id === comment.user_id"
-                    class="flex items-center gap-3 text-xs text-bro-muted/50 mt-4 border-t border-bro-border/40 pt-3"
+                    class="flex items-center gap-3 text-xs text-bro-muted/50 mt-4 border-t border-bro-border/40 pt-3 select-none"
                 >
+                    <!-- Edit / Save Toggle Control Trigger -->
                     <button
                         @click="isEditing ? update() : startEditing()"
                         type="button"
-                        class="inline-flex items-center gap-1 hover:text-bro-light transition-colors cursor-pointer font-bold uppercase tracking-wider text-[11px]"
+                        class="inline-flex items-center gap-1.5 hover:text-bro-light transition-colors cursor-pointer font-bold uppercase tracking-wider text-[11px] group"
                     >
-                        <svg
-                            class="w-3.5 h-3.5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1.75"
-                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                        <!-- Conditional Icon State Swap based on inline active edit mode -->
+                        <template v-if="isEditing">
+                            <Check
+                                class="w-3 h-3 text-emerald-500 stroke-[2.5]"
                             />
-                        </svg>
+                        </template>
+                        <template v-else>
+                            <SquarePen
+                                class="w-3 h-3 text-bro-muted group-hover:text-bro-crimson-hover transition-colors stroke-2"
+                            />
+                        </template>
+
                         <span>{{ isEditing ? "Save" : "Edit" }}</span>
                     </button>
 
+                    <!-- Minimal Separator Dot -->
                     <span
-                        class="text-bro-border select-none text-base font-normal"
+                        class="text-bro-border/60 select-none text-sm font-normal"
                         >•</span
                     >
 
+                    <!-- Destructive Delete Action Trigger -->
                     <button
                         @click="destroy"
                         :disabled="deleteLoading"
                         type="button"
-                        class="inline-flex items-center gap-1 hover:text-red-400 transition-colors cursor-pointer font-bold uppercase tracking-wider text-[11px] disabled:opacity-40 disabled:cursor-not-allowed"
+                        class="inline-flex items-center gap-1.5 text-bro-muted hover:text-rose-500 disabled:text-bro-border transition-colors cursor-pointer font-bold uppercase tracking-wider text-[11px] disabled:cursor-not-allowed group"
                     >
-                        <svg
-                            class="w-3.5 h-3.5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1.75"
-                                d="m14.74 9-.346 9m-4.788 0L9 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                            />
-                        </svg>
+                        <Trash2
+                            class="w-3 h-3 group-hover:text-rose-500 disabled:text-bro-border transition-colors stroke-2"
+                        />
+
                         <span>{{
                             deleteLoading ? "Removing..." : "Delete"
                         }}</span>

@@ -3,6 +3,7 @@ import { ref, watch, computed, nextTick } from "vue";
 import api from "../../services/api";
 import { useAuthStore } from "../../stores/AuthStore";
 import BaseError from "../../components/ui/BaseError.vue";
+import { X } from "@lucide/vue";
 
 const auth = useAuthStore();
 
@@ -209,19 +210,7 @@ watch(
                         class="absolute top-6 right-6 text-bro-muted hover:text-bro-light transition-colors cursor-pointer"
                         aria-label="Close modal"
                     >
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
+                        <X class="w-5 h-5" />
                     </button>
                 </div>
             </div>

@@ -6,6 +6,12 @@ import api from "../../services/api";
 import BaseError from "../../components/ui/BaseError.vue";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import dayjs from "../../../utils/dayjs.js";
+import {
+    ThumbsUp,
+    ThumbsDown,
+    MessageCircleMore,
+    ArrowRight,
+} from "@lucide/vue";
 
 const post = ref(null);
 
@@ -99,7 +105,7 @@ onMounted(() => {
             </div>
 
             <BaseError v-if="errorMessage" :error-messages="errorMessage" />
-            <!-- Right Column: Visual Component Display -->
+            <!--  Visual Display -->
             <div
                 v-if="post"
                 class="lg:col-span-5 flex justify-center items-center"
@@ -158,29 +164,31 @@ onMounted(() => {
 
                         <!-- Stats -->
                         <div
-                            class="flex items-center gap-5 pt-2 text-sm font-semibold"
+                            class="flex items-center gap-5 pt-2 text-sm font-semibold font-mono select-none"
                         >
                             <span
-                                class="inline-flex items-center gap-2 text-emerald-500"
+                                class="inline-flex items-center gap-1.5 text-emerald-500"
                             >
-                                👍 {{ post.upvotes_count }}
+                                <ThumbsUp class="w-4 h-4 stroke-2" />
+                                <span>{{ post.upvotes_count || 0 }}</span>
                             </span>
 
                             <span
-                                class="inline-flex items-center gap-2 text-emerald-500"
+                                class="inline-flex items-center gap-1.5 text-rose-500"
                             >
-                                👎 {{ post.downvotes_count }}
+                                <ThumbsDown class="w-4 h-4 stroke-2" />
+                                <span>{{ post.downvotes_count || 0 }}</span>
                             </span>
 
                             <span
-                                class="inline-flex items-center gap-2 text-sky-400"
+                                class="inline-flex items-center gap-1.5 text-sky-400"
                             >
-                                💬 {{ post.comments_count }}
+                                <MessageCircleMore class="w-4 h-4 stroke-2" />
+                                <span>{{ post.comments_count || 0 }}</span>
                             </span>
                         </div>
                     </div>
 
-                    <!-- replace the entire Categories section with this -->
                     <div
                         class="px-6 py-4 border-t border-bro-border bg-bro-bg/40 flex items-center justify-between"
                     >
@@ -219,9 +227,9 @@ onMounted(() => {
                                 name: 'posts.show',
                                 params: { id: post.id },
                             }"
-                            class="text-[11px] font-bold text-bro-crimson hover:text-bro-crimson-hover uppercase tracking-wider transition-colors"
+                            class="flex items-center gap-2 text-[11px] font-bold text-bro-crimson hover:text-bro-crimson-hover uppercase tracking-wider transition-colors"
                         >
-                            Read →
+                            Read <ArrowRight class="w-3 h-3" />
                         </RouterLink>
                     </div>
                 </div>
