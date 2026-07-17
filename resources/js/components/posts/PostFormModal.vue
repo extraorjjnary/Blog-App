@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch, computed, nextTick } from "vue";
+import { ref, watch, computed, nextTick, onMounted } from "vue";
 import api from "../../services/api";
 import { useAuthStore } from "../../stores/AuthStore";
 import BaseError from "../../components/ui/BaseError.vue";
-import { X } from "@lucide/vue";
+import { X, Tag, ChevronDown } from "@lucide/vue";
 
 const auth = useAuthStore();
 
@@ -15,24 +15,47 @@ const props = defineProps({
     post: Object, // null if create, update if persist post data
 });
 
+const categories = ref([]);
+
+const fetchCategories = async () => {
+    const response = await api.get("/categories");
+    categories.value = response.data;
+};
+
+onMounted(() => {
+    fetchCategories();
+});
+
 const form = ref({
     title: "",
+    category_id: "",
     content: "",
 });
 
+// const resetForm = () => {
+//     form.value.title = "";
+//     form.value.category = "";
+//     form.value.content = "";
+// };
+
 // Watch until prop shifts to auto-populate or clear form state
 watch(
-    () => props.post,
-    (post) => {
-        if (post) {
+    () => props.isOpen,
+    (isOpen) => {
+        if (!isOpen) return;
+
+        // modal opening — reset based on mode
+        if (props.post) {
             form.value = {
-                title: post.title,
-                content: post.content,
+                title: props.post.title,
+                category_id: props.post.category_id,
+                content: props.post.content,
             };
         } else {
             // Reset inputs if user shifts from edit mode back to create mode
             form.value = {
                 title: "",
+                category_id: "",
                 content: "",
             };
         }
@@ -61,10 +84,11 @@ const save = async () => {
             response = await api.post("/posts", form.value);
         }
 
-        // Reset inputs if after creating a brandnew post
+        // Reset inputs if after creating or updating a brandnew post
 
         form.value = {
             title: "",
+            category_id: "",
             content: "",
         };
 
@@ -154,6 +178,47 @@ watch(
                                     class="w-full px-3.5 py-2.5 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/30"
                                     placeholder="e.g., Finally started training BJJ at 30..."
                                 />
+                            </div>
+
+                            <!-- Category Selection Field Element Group -->
+                            <div class="space-y-1.5">
+                                <label
+                                    class="text-[11px] font-bold uppercase tracking-widest text-bro-muted/60"
+                                >
+                                    Choose Category
+                                </label>
+
+                                <div class="relative w-full">
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-bro-muted/40"
+                                    >
+                                        <Tag class="w-4 h-4" />
+                                    </div>
+
+                                    <select
+                                        v-model="form.category_id"
+                                        class="w-full pl-10 pr-10 py-2.5 bg-bro-bg border border-bro-border focus:border-bro-crimson rounded-xl text-sm text-bro-light placeholder-bro-muted/30 outline-none transition-all cursor-pointer appearance-none"
+                                    >
+                                        <option value="" disabled selected>
+                                            Select a category...
+                                        </option>
+                                        <option
+                                            v-for="category in categories"
+                                            :key="category.id"
+                                            :value="category.id"
+                                            class="bg-bro-surface text-bro-light"
+                                        >
+                                            {{ category.name }}
+                                        </option>
+                                    </select>
+
+                                    <!-- Dropdown Indicator Arrow (Sits on top of the native arrow we disabled with appearance-none) -->
+                                    <div
+                                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-bro-muted/40"
+                                    >
+                                        <ChevronDown class="w-4 h-4" />
+                                    </div>
+                                </div>
                             </div>
 
                             <div>

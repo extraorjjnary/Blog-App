@@ -7,7 +7,7 @@ import BaseLoader from "../../components/ui/BaseLoader.vue";
 import PostFormModal from "../../components/posts/PostFormModal.vue";
 import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
 import { useRouter } from "vue-router";
-import { Plus, SquarePen, Trash2 } from "@lucide/vue";
+import { Plus, SquarePen, Trash2, FileText, Tag } from "@lucide/vue";
 
 const router = useRouter();
 
@@ -134,6 +134,7 @@ const destroy = async (post) => {
                             <th class="py-4 px-6 font-bold">
                                 Experience Title
                             </th>
+
                             <th class="py-4 px-6 font-bold">Date Published</th>
                             <th class="py-4 px-6 font-bold text-center">
                                 Upvotes
@@ -160,11 +161,25 @@ const destroy = async (post) => {
                             "
                             class="hover:bg-bro-bg/40 transition-colors duration-150"
                         >
-                            <td
-                                class="py-4 px-6 font-bold text-bro-light max-w-xs truncate"
-                            >
-                                {{ post.title }}
+                            <td class="py-4 px-6 max-w-xs">
+                                <div class="flex flex-col items-start gap-1.5">
+                                    <!-- 1. Title is wrapped in its own block to truncate cleanly -->
+                                    <span
+                                        class="font-bold text-bro-light truncate block w-full"
+                                    >
+                                        {{ post.title }}
+                                    </span>
+
+                                    <!-- 2. Category Badge sits perfectly underneath -->
+                                    <span
+                                        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-bro-border/40 text-bro-muted text-[8px] font-black uppercase tracking-wider border border-bro-border select-none"
+                                    >
+                                        <Tag class="w-2 h-2 stroke-[2.5]" />
+                                        <span>{{ post.category.name }}</span>
+                                    </span>
+                                </div>
                             </td>
+
                             <td class="py-4 px-6 text-xs text-bro-muted/60">
                                 {{
                                     dayjs(post.created_at).format(
@@ -281,19 +296,7 @@ const destroy = async (post) => {
             <div
                 class="w-12 h-12 rounded-2xl bg-bro-bg border border-bro-border flex items-center justify-center text-bro-crimson"
             >
-                <svg
-                    class="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                </svg>
+                <FileText class="w-5 h-5 stroke-[1.5]" />
             </div>
             <h3 class="font-bold text-bro-light text-base">
                 No experiences posted yet

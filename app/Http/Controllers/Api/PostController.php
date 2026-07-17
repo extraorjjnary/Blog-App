@@ -16,7 +16,7 @@ class PostController extends Controller
     public function myPosts(Request $request)
     {
         $posts = $request->user()->posts()
-            ->with('user')
+            ->with('user', 'category')
             ->withCount([
                 'comments',
                 'reactions as upvotes_count' => fn($q) => $q->where('reaction_type', 'upvote'),
@@ -34,7 +34,7 @@ class PostController extends Controller
 
         $limit = $request->query('limit', 10);
 
-        $posts = Post::with('user')
+        $posts = Post::with('user', 'category')
             ->withCount([
                 'comments',
                 'reactions as upvotes_count' => fn($q) => $q->where('reaction_type', 'upvote'),
@@ -57,10 +57,10 @@ class PostController extends Controller
     public function store(Request $request)
     {
 
-
         $validatedData = $request->validate([
             'title' => ['required', 'string', 'min:3', 'max:255'],
-            'content' => ['required', 'string', 'min:3']
+            'content' => ['required', 'string', 'min:3'],
+            'category_id' => ['required', 'integer', 'exists:categories,id']
         ]);
 
         $user = $request->user();
@@ -81,7 +81,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
 
-        $post->load(['user', 'comments.user', 'reactions.user']);
+        $post->load(['user', 'category', 'comments.user', 'reactions.user']);
 
         $post->loadCount([
             "reactions as upvotes_count" => fn($q) =>
@@ -108,10 +108,12 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'title' => ['string', 'min:3', 'max:255'],
             'content' => ['string', 'min:3'],
+            'category_id' => ['required', 'integer', 'exists:categories,id']
+
         ]);
 
         $post->update($validatedData);
-        $post->load(['user', 'comments.user', 'reactions.user']);
+        $post->load(['user', 'category', 'comments.user', 'reactions.user']);
 
         return response()->json($post, 200);
     }

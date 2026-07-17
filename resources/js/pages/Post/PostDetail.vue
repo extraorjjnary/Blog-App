@@ -10,7 +10,7 @@ import { useAuthStore } from "../../stores/AuthStore.js";
 import { useReaction } from "../../composables/useReaction.js";
 import { useGuest } from "../../composables/useGuest.js";
 import CommentSection from "../../components/posts/CommentSection.vue";
-import { SquarePen, ThumbsDown, ThumbsUp, Trash2 } from "@lucide/vue";
+import { SquarePen, ThumbsDown, ThumbsUp, Trash2, Tag } from "@lucide/vue";
 
 // post looks like this:
 // {
@@ -207,11 +207,12 @@ const reaction = async (type) => {
                         }}</time
                     >
                     <span class="text-bro-border">|</span>
-                    <span
-                        class="inline-flex items-center gap-1.5 bg-bro-bg text-bro-muted text-xs px-3 py-1 rounded-full font-medium border border-bro-border"
+                    <div
+                        class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-bro-crimson/10 text-bro-crimson text-[10px] font-bold uppercase tracking-widest border border-bro-crimson/20 select-none"
                     >
-                        Brotherhood Feed
-                    </span>
+                        <Tag class="w-4 h-3 text-bro-crimson stroke-3" />
+                        <span>{{ post.category.name }}</span>
+                    </div>
 
                     <div
                         v-if="auth.user?.id === post.user_id"

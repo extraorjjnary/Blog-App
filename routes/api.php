@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ReactionController;
 use App\Http\Controllers\Api\CommentController;
@@ -25,6 +26,8 @@ Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
 Route::put('/comments/{comment}', [CommentController::class, 'update']);
 Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
+// public categories
+Route::get('/categories', CategoryController::class);
 
 
 
