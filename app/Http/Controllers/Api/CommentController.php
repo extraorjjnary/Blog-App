@@ -32,7 +32,10 @@ class CommentController extends Controller
 
         $comment->load('user');
 
-        return response()->json($comment, 201);
+        return response()->json([
+            'message' => 'Your comment has been posted!',
+            'comment' => $comment
+        ], 201);
     }
 
 
@@ -63,7 +66,10 @@ class CommentController extends Controller
 
         $comment->load('user');
 
-        return response()->json($comment, 200);
+        return response()->json([
+            'message' => 'Your comment has been updated',
+            'comment' => $comment
+        ], 200);
     }
 
     /**

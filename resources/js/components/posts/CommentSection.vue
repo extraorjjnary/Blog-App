@@ -22,7 +22,7 @@ const submitComment = async () => {
             guest_name: guestName,
             content: content.value,
         });
-        onCommentSaved(response.data);
+        onCommentSaved(response.data.comment);
         content.value = "";
     } catch (error) {
         errorMessage.value =

@@ -92,7 +92,7 @@ const save = async () => {
             content: "",
         };
 
-        emit("saved", response.data);
+        emit("saved", response.data.post);
     } catch (error) {
         errorMessage.value =
             error.response?.data?.message ||

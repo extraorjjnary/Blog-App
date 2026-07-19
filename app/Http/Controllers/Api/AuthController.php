@@ -32,8 +32,8 @@ class AuthController extends Controller
         Auth::login($user);
 
         return response()->json([
+            'message' => "Registration Successfully",
             'user' => $user,
-            'message' => "Registration Successfully"
         ], 201);
     }
 

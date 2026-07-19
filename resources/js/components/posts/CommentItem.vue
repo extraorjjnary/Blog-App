@@ -38,8 +38,8 @@ const update = async () => {
             guest_name: guestName,
             content: editBody.value,
         });
-        editBody.value = response.data.content;
-        emit("updated", response.data);
+        editBody.value = response.data.comment.content;
+        emit("updated", response.data.comment);
         isEditing.value = false;
     } catch (error) {
         errorMessage.value =
