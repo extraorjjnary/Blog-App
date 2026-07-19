@@ -31,8 +31,16 @@ class PostController extends Controller
 
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:50'],
+        ]);
 
-        $limit = $request->query('limit', 10);
+        $search = trim($validated['search'] ?? '');
+        $categoryId  = $validated['category_id'] ?? null;
+        $limit = $validated['limit'] ?? 10;
+
 
         $posts = Post::with('user', 'category')
             ->withCount([
@@ -40,6 +48,21 @@ class PostController extends Controller
                 'reactions as upvotes_count' => fn($q) => $q->where('reaction_type', 'upvote'),
                 'reactions as downvotes_count' => fn($q) => $q->where('reaction_type', 'downvote')
             ])
+
+            // Category filtering feature
+            ->when($categoryId, fn($query) => $query->where('category_id', $categoryId))
+
+            // Search feature
+            ->when(
+                $search,
+                fn($query) => $query->where(
+                    fn($subQuery) => $subQuery
+                        ->where('title', 'like', "%{$search}%")
+                        ->orWhere('content', 'like', "%{$search}%")
+                )
+            )
+
+
             ->latest()
             ->simplePaginate($limit);
 

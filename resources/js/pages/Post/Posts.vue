@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import api from "../../services/api";
 import dayjs from "../../../utils/dayjs.js";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
@@ -14,12 +14,38 @@ import {
     ThumbsDown,
     MessageSquareText,
     Search,
+    ChevronDown,
 } from "@lucide/vue";
 
 const auth = useAuthStore();
 
 const posts = ref([]);
 const nextPageUrl = ref(null);
+
+// category state
+const categories = ref([]);
+// search and category query params
+const searchQuery = ref("");
+const categoryIdQuery = ref("");
+
+// search debounce
+let debounceTimer = null;
+watch(searchQuery, () => {
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(() => {
+        posts.value = [];
+        nextPageUrl.value = null;
+        fetchData("/posts");
+    }, 500);
+});
+
+// watch changes for category
+watch(categoryIdQuery, () => {
+    posts.value = [];
+    nextPageUrl.value = null;
+    fetchData("/posts");
+});
 
 const initialLoading = ref(false);
 const loadingMore = ref(false);
@@ -32,7 +58,12 @@ const fetchData = async (url, isLoadMore = false) => {
     errorMessage.value = null;
 
     try {
-        const response = await api.get(url);
+        const response = await api.get(url, {
+            params: {
+                search: searchQuery.value || undefined,
+                category_id: categoryIdQuery.value || undefined,
+            },
+        });
         posts.value = [...posts.value, ...response.data.data];
         nextPageUrl.value = response.data.next_page_url;
     } catch (error) {
@@ -49,11 +80,6 @@ const loadMore = () => {
     fetchData(nextPageUrl.value, true);
 };
 
-onMounted(() => {
-    posts.value = [];
-    fetchData("/posts");
-});
-
 // Modal
 
 const showModal = ref(false);
@@ -64,6 +90,23 @@ const onPostSaved = () => {
     posts.value = [];
     fetchData("/posts");
 };
+
+// Categories fetch
+const fetchCategories = async () => {
+    try {
+        const response = await api.get("/categories");
+        categories.value = response.data;
+    } catch (error) {
+        errorMessage.value =
+            error.response?.data?.message || "Failed to fetch categories";
+    }
+};
+
+onMounted(() => {
+    fetchCategories();
+    posts.value = [];
+    fetchData("/posts");
+});
 </script>
 
 <template>
@@ -79,16 +122,46 @@ const onPostSaved = () => {
                 Recent Experiences
             </h1>
 
-            <div class="relative grow max-w-md">
-                <input
-                    type="search"
-                    placeholder="Search relatable stories..."
-                    class="w-full px-4 py-2.5 pl-11 bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/40 font-medium"
-                />
-                <div
-                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
-                >
-                    <Search class="w-4 h-4" />
+            <!--  Contains both Search Input and Category Dropdown -->
+            <div
+                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 grow max-w-2xl sm:justify-end"
+            >
+                <!-- Search Input Controls Field -->
+                <div class="relative grow max-w-md">
+                    <input
+                        v-model="searchQuery"
+                        type="search"
+                        placeholder="Search relatable stories..."
+                        class="w-full px-4 py-2.5 pl-11 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/40 font-medium"
+                    />
+                    <div
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-bro-muted/50"
+                    >
+                        <Search class="w-4 h-4" />
+                    </div>
+                </div>
+
+                <!-- Dropdown Category -->
+                <div class="relative min-w-45">
+                    <select
+                        v-model="categoryIdQuery"
+                        class="w-full appearance-none px-4 py-2.5 pr-10 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all font-medium cursor-pointer"
+                    >
+                        <option value="" selected>All Categories</option>
+                        <option
+                            v-for="category in categories"
+                            :key="category.id"
+                            :value="category.id"
+                        >
+                            {{ category.name }}
+                        </option>
+                    </select>
+
+                    <div
+                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-bro-muted/60"
+                    >
+                        <ChevronDown class="w-4 h-4 stroke-[2.5]" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,7 +174,7 @@ const onPostSaved = () => {
                 v-if="!initialLoading && posts.length === 0 && !errorMessage"
                 class="py-12 text-center text-bro-muted col-span-full font-medium"
             >
-                No experiences found yet.
+                No experiences found.
             </div>
 
             <RouterLink

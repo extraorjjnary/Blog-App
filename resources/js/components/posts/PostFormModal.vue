@@ -18,8 +18,13 @@ const props = defineProps({
 const categories = ref([]);
 
 const fetchCategories = async () => {
-    const response = await api.get("/categories");
-    categories.value = response.data;
+    try {
+        const response = await api.get("/categories");
+        categories.value = response.data;
+    } catch (error) {
+        errorMessage.value =
+            error.response?.data?.message || "Failed to fetch categories";
+    }
 };
 
 onMounted(() => {
@@ -197,6 +202,7 @@ watch(
 
                                     <select
                                         v-model="form.category_id"
+                                        required
                                         class="w-full pl-10 pr-10 py-2.5 bg-bro-bg border border-bro-border focus:border-bro-crimson rounded-xl text-sm text-bro-light placeholder-bro-muted/30 outline-none transition-all cursor-pointer appearance-none"
                                     >
                                         <option value="" disabled selected>
