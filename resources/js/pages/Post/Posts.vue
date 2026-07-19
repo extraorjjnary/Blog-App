@@ -58,9 +58,8 @@ onMounted(() => {
 
 const showModal = ref(false);
 
-const onPostSaved = (newPost) => {
+const onPostSaved = () => {
     showModal.value = false;
-    posts.value.unshift(newPost);
 
     posts.value = [];
     fetchData("/posts");

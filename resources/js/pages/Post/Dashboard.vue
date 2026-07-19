@@ -51,9 +51,8 @@ onMounted(() => {
     fetchMyPosts("/my-posts");
 });
 
-const onPostSaved = (newPost) => {
+const onPostSaved = () => {
     showCreateModal.value = false;
-    posts.value.unshift(newPost);
 
     posts.value = [];
     fetchMyPosts("/my-posts");
@@ -74,7 +73,6 @@ const destroy = async (post) => {
     errorMessage.value = null;
     try {
         await api.delete(`/posts/${post.id}`);
-        posts.value = posts.value.filter((p) => p.id !== post.id);
 
         posts.value = [];
         fetchMyPosts("/my-posts");
