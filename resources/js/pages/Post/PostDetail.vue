@@ -10,7 +10,14 @@ import { useAuthStore } from "../../stores/AuthStore.js";
 import { useReaction } from "../../composables/useReaction.js";
 import { useGuest } from "../../composables/useGuest.js";
 import CommentSection from "../../components/posts/CommentSection.vue";
-import { SquarePen, ThumbsDown, ThumbsUp, Trash2, Tag } from "@lucide/vue";
+import {
+    SquarePen,
+    ThumbsDown,
+    ThumbsUp,
+    Trash2,
+    Tag,
+    ArrowLeft,
+} from "@lucide/vue";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
 const { getErrorMessage } = useErrorHandler();
 
@@ -175,6 +182,16 @@ const reaction = async (type) => {
 
     <div v-if="post" class="max-w-4xl mx-auto space-y-12 text-bro-light">
         <BaseError v-if="errorMessage" :error-messages="errorMessage" />
+
+        <button
+            @click="router.back()"
+            class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-bro-surface hover:bg-bro-surface/80 border border-bro-border hover:border-bro-crimson/40 text-bro-muted hover:text-bro-crimson transition-all duration-200 text-xs font-semibold rounded-xl shadow-xs hover:shadow-md group cursor-pointer mb-6"
+        >
+            <ArrowLeft
+                class="w-3.5 h-3.5 text-bro-muted group-hover:text-bro-crimson-hover group-hover:-translate-x-1 transition-all duration-200"
+            />
+            <span>Go back</span>
+        </button>
 
         <article
             class="bg-bro-surface border border-bro-border p-8 rounded-2xl shadow-md"

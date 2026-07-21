@@ -9,8 +9,11 @@ import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
 import { useRouter } from "vue-router";
 import { Plus, SquarePen, Trash2, FileText, Tag } from "@lucide/vue";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
+import { useAuthStore } from "../../stores/AuthStore.js";
 
 const { getErrorMessage } = useErrorHandler();
+
+const auth = useAuthStore();
 
 const router = useRouter();
 
@@ -105,7 +108,7 @@ const destroy = async (post) => {
                 <h1
                     class="text-2xl font-extrabold tracking-tighter text-bro-light"
                 >
-                    BroCore Control Center
+                    Welcome back, {{ auth.user.name }}
                 </h1>
                 <p class="text-xs text-bro-muted/60 font-medium mt-1">
                     Manage and track your published brotherhood experiences

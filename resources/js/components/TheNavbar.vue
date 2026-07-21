@@ -66,34 +66,52 @@ const logout = async () => {
                     />
                 </div>
 
-                <!-- Right Side: Auth Toggle Viewports -->
                 <!-- Authenticated State -->
                 <div v-if="auth.isLoggedIn" class="flex items-center space-x-4">
-                    <div class="hidden sm:flex flex-col text-right">
-                        <span class="text-sm font-medium text-bro-light">{{
-                            auth.user?.name
-                        }}</span>
-                        <span class="text-xs text-bro-muted">Author</span>
+                    <div
+                        class="flex items-center gap-2.5 px-3 py-1.5 bg-bro-surface/60 border border-bro-border rounded-xl"
+                    >
+                        <!-- User Initial Avatar Circle -->
+                        <div
+                            class="w-7 h-7 rounded-lg bg-bro-crimson/15 border border-bro-crimson/30 flex items-center justify-center text-bro-crimson font-black text-xs uppercase shrink-0"
+                        >
+                            {{ auth.user.name.charAt(0) }}
+                        </div>
+
+                        <div class="hidden sm:flex flex-col text-left">
+                            <span
+                                class="text-xs font-bold text-bro-light leading-tight"
+                            >
+                                {{ auth.user.name }}
+                            </span>
+                            <span
+                                class="text-[10px] font-medium text-bro-muted/70 leading-tight truncate max-w-30"
+                            >
+                                {{ auth.user.email }}
+                            </span>
+                        </div>
                     </div>
+
                     <button
                         @click="logout"
-                        class="inline-flex items-center px-3.5 py-2 border border-bro-border rounded-lg text-sm font-medium text-bro-muted bg-bro-bg hover:bg-rose-950/20 hover:text-rose-400 hover:border-rose-900/40 transition-all cursor-pointer active:scale-95"
+                        class="inline-flex items-center px-3 py-1.5 border border-bro-border rounded-xl text-xs font-semibold text-bro-muted bg-bro-bg hover:bg-rose-950/30 hover:text-rose-400 hover:border-rose-800/40 transition-all cursor-pointer active:scale-95 shadow-xs"
+                        title="Log out of your account"
                     >
                         Logout
                     </button>
                 </div>
 
-                <!-- Guest State -->
-                <div v-else class="flex items-center space-x-3">
+                <div v-else class="flex items-center gap-2.5">
                     <RouterLink
                         :to="{ name: 'register' }"
-                        class="inline-flex items-center px-3.5 py-2 border border-bro-border rounded-lg text-sm font-medium text-bro-light bg-bro-bg hover:bg-bro-surface transition-all active:scale-95"
+                        class="inline-flex items-center px-3.5 py-1.5 border border-bro-border rounded-xl text-xs font-semibold text-bro-muted hover:text-bro-light bg-bro-bg hover:bg-bro-surface transition-all cursor-pointer active:scale-95 shadow-xs"
                     >
                         Register
                     </RouterLink>
+
                     <RouterLink
                         :to="{ name: 'login' }"
-                        class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-bold text-bro-light bg-bro-crimson hover:bg-bro-crimson-hover transition-all shadow-md shadow-bro-crimson/10 active:scale-95"
+                        class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-bro-crimson hover:bg-bro-crimson/90 transition-all shadow-md shadow-bro-crimson/20 active:scale-95 cursor-pointer"
                     >
                         Login
                     </RouterLink>
