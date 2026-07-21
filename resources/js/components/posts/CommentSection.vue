@@ -4,6 +4,8 @@ import CommentItem from "./CommentItem.vue";
 import api from "../../services/api.js";
 import { useGuest } from "../../composables/useGuest.js";
 import BaseError from "../ui/BaseError.vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+const { getErrorMessage } = useErrorHandler();
 
 const { guestName } = useGuest();
 
@@ -25,9 +27,10 @@ const submitComment = async () => {
         onCommentSaved(response.data.comment);
         content.value = "";
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to comment this post. Please check your connection.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to comment this post. Please check your connection.",
+        );
     } finally {
         loading.value = false;
     }

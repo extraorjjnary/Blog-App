@@ -8,6 +8,9 @@ import PostFormModal from "../../components/posts/PostFormModal.vue";
 import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
 import { useRouter } from "vue-router";
 import { Plus, SquarePen, Trash2, FileText, Tag } from "@lucide/vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+
+const { getErrorMessage } = useErrorHandler();
 
 const router = useRouter();
 
@@ -32,9 +35,10 @@ const fetchMyPosts = async (url, isLoadMore = false) => {
         posts.value = [...posts.value, ...response.data.data];
         nextPageUrl.value = response.data.next_page_url;
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to fetch your Posts. Please try again.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to fetch your Posts. Please try again.",
+        );
     } finally {
         initialLoading.value = false;
         loadingMore.value = false;
@@ -77,9 +81,10 @@ const destroy = async (post) => {
         posts.value = [];
         fetchMyPosts("/my-posts");
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to delete Post. Please try again.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to delete Post. Please try again.",
+        );
     } finally {
         deleteLoading.value = false;
     }

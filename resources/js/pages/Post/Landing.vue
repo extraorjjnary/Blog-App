@@ -12,6 +12,9 @@ import {
     MessageCircleMore,
     ArrowRight,
 } from "@lucide/vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+
+const { getErrorMessage } = useErrorHandler();
 
 const post = ref(null);
 
@@ -39,8 +42,10 @@ const fetchLatestPost = async () => {
         const response = await api.get("/posts?limit=1");
         post.value = response.data.data[0];
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message || "Failed to fetch latest post.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to fetch latest post.",
+        );
     } finally {
         loading.value = false;
     }

@@ -1,16 +1,22 @@
 <script setup>
+import { useErrorHandler } from "../composables/useErrorHandler";
 import { useAuthStore } from "../stores/AuthStore";
 import { useRouter } from "vue-router";
+import BaseError from "./ui/BaseError.vue";
+import { ref } from "vue";
+const { getErrorMessage } = useErrorHandler();
 
 const auth = useAuthStore();
 const router = useRouter();
 
+const errorMessage = ref(null);
 const logout = async () => {
+    errorMessage.value = null;
     try {
         await auth.logout();
         router.push({ name: "landing" });
-    } catch (err) {
-        console.error("Logout error:", err);
+    } catch (error) {
+        errorMessage.value = getErrorMessage(error, "Failed to logout.");
     }
 };
 </script>
@@ -53,6 +59,11 @@ const logout = async () => {
                             Share Your Story
                         </RouterLink>
                     </div>
+
+                    <BaseError
+                        v-if="errorMessage"
+                        :error-messages="errorMessage"
+                    />
                 </div>
 
                 <!-- Right Side: Auth Toggle Viewports -->

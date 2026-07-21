@@ -4,6 +4,8 @@ import api from "../../services/api";
 import { useAuthStore } from "../../stores/AuthStore";
 import BaseError from "../../components/ui/BaseError.vue";
 import { X, Tag, ChevronDown } from "@lucide/vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+const { getErrorMessage } = useErrorHandler();
 
 const auth = useAuthStore();
 
@@ -22,8 +24,10 @@ const fetchCategories = async () => {
         const response = await api.get("/categories");
         categories.value = response.data;
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message || "Failed to fetch categories";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to fetch categories",
+        );
     }
 };
 
@@ -36,37 +40,6 @@ const form = ref({
     category_id: "",
     content: "",
 });
-
-// const resetForm = () => {
-//     form.value.title = "";
-//     form.value.category = "";
-//     form.value.content = "";
-// };
-
-// Watch until prop shifts to auto-populate or clear form state
-watch(
-    () => props.isOpen,
-    (isOpen) => {
-        if (!isOpen) return;
-
-        // modal opening — reset based on mode
-        if (props.post) {
-            form.value = {
-                title: props.post.title,
-                category_id: props.post.category_id,
-                content: props.post.content,
-            };
-        } else {
-            // Reset inputs if user shifts from edit mode back to create mode
-            form.value = {
-                title: "",
-                category_id: "",
-                content: "",
-            };
-        }
-    },
-    { immediate: true },
-);
 
 const isEditMode = computed(() => !!props.post);
 
@@ -99,13 +72,42 @@ const save = async () => {
 
         emit("saved", response.data.post);
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to save post. Please check your connection.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to save post. Please check your connection.",
+        );
     } finally {
         loading.value = false;
     }
 };
+
+// Watch until prop shifts to auto-populate or clear form state
+watch(
+    () => props.isOpen,
+    (isOpen) => {
+        if (!isOpen) {
+            errorMessage.value = null;
+            return;
+        }
+
+        // modal opening — reset based on mode
+        if (props.post) {
+            form.value = {
+                title: props.post.title,
+                category_id: props.post.category_id,
+                content: props.post.content,
+            };
+        } else {
+            // Reset inputs if user shifts from edit mode back to create mode
+            form.value = {
+                title: "",
+                category_id: "",
+                content: "",
+            };
+        }
+    },
+    { immediate: true },
+);
 
 // This will watch until rendering the input inside the DOM
 const inputTitle = ref(null);
@@ -143,11 +145,6 @@ watch(
                 <div
                     class="relative w-full max-w-2xl bg-bro-surface p-8 rounded-2xl border border-bro-border shadow-2xl transform transition-all space-y-8 my-8 text-bro-light"
                 >
-                    <BaseError
-                        v-if="errorMessage"
-                        :error-messages="errorMessage"
-                    />
-
                     <div class="text-center">
                         <h3
                             class="text-3xl font-extrabold text-bro-light tracking-tight"
@@ -165,6 +162,11 @@ watch(
                             connect with.
                         </p>
                     </div>
+
+                    <BaseError
+                        v-if="errorMessage"
+                        :error-messages="errorMessage"
+                    />
 
                     <form class="space-y-6" @submit.prevent="save">
                         <div class="space-y-5">

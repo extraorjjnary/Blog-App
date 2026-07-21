@@ -11,6 +11,8 @@ import { useReaction } from "../../composables/useReaction.js";
 import { useGuest } from "../../composables/useGuest.js";
 import CommentSection from "../../components/posts/CommentSection.vue";
 import { SquarePen, ThumbsDown, ThumbsUp, Trash2, Tag } from "@lucide/vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+const { getErrorMessage } = useErrorHandler();
 
 // post looks like this:
 // {
@@ -56,9 +58,10 @@ const fetchPost = async (id) => {
 
         userReaction.value = existing?.reaction_type ?? null;
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to fetch post. Please check your connection.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to fetch post. Please check your connection.",
+        );
     } finally {
         loading.value = false;
     }
@@ -91,8 +94,7 @@ const destroy = async () => {
 
         router.push({ name: "posts.index" });
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message || "Failed to delete post";
+        errorMessage.value = getErrorMessage(error, "Failed to delete post");
     } finally {
         deleteLoading.value = false;
     }
@@ -158,9 +160,10 @@ const reaction = async (type) => {
         upvotesCount.value = previousUpvotesCount;
         downvotesCount.value = previousDownvotesCount;
 
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to sync reaction with server.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to sync reaction with server.",
+        );
     } finally {
         reactionLoading.value = false;
     }

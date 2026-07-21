@@ -16,6 +16,8 @@ import {
     Search,
     ChevronDown,
 } from "@lucide/vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+const { getErrorMessage } = useErrorHandler();
 
 const auth = useAuthStore();
 
@@ -67,9 +69,10 @@ const fetchData = async (url, isLoadMore = false) => {
         posts.value = [...posts.value, ...response.data.data];
         nextPageUrl.value = response.data.next_page_url;
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to fetch posts. Please check your connection.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to fetch posts. Please check your connection.",
+        );
     } finally {
         initialLoading.value = false;
         loadingMore.value = false;
@@ -97,8 +100,10 @@ const fetchCategories = async () => {
         const response = await api.get("/categories");
         categories.value = response.data;
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message || "Failed to fetch categories";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to fetch categories",
+        );
     }
 };
 

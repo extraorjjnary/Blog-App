@@ -5,6 +5,9 @@ import BaseInput from "../../components/Auth/BaseInput.vue";
 import BaseButton from "../../components/Auth/BaseButton.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/AuthStore.js";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+import BaseError from "../../components/ui/BaseError.vue";
+const { getErrorMessage } = useErrorHandler();
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -15,17 +18,17 @@ const credentials = ref({
 });
 
 const loading = ref(false);
-const error = ref(null);
+const errorMessage = ref(null);
 
 const login = async () => {
     loading.value = true;
-    error.value = null;
+    errorMessage.value = null;
 
     try {
         await auth.login(credentials.value);
         router.push({ name: "posts.index" });
-    } catch (err) {
-        error.value = err.response?.data?.message || "Login failed.";
+    } catch (error) {
+        errorMessage.value = getErrorMessage(error, "Login failed.");
     } finally {
         loading.value = false;
     }
@@ -51,12 +54,7 @@ const login = async () => {
                 title="Welcome back, Browskie"
                 sub-title="Sign in to share your raw experiences."
             >
-                <p
-                    v-if="error"
-                    class="text-bro-crimson-hover text-sm font-semibold mb-4 bg-bro-crimson/10 border border-bro-crimson/20 p-3 rounded-lg"
-                >
-                    {{ error }}
-                </p>
+                <BaseError v-if="errorMessage" :error-messages="errorMessage" />
 
                 <form class="mt-8 space-y-6" @submit.prevent="login">
                     <BaseInput

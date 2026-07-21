@@ -6,6 +6,8 @@ import api from "../../services/api";
 import BaseError from "../ui/BaseError.vue";
 import dayjs from "../../../utils/dayjs.js";
 import { Check, SquarePen, Trash2 } from "@lucide/vue";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+const { getErrorMessage } = useErrorHandler();
 
 const { guestName } = useGuest();
 const auth = useAuthStore();
@@ -42,9 +44,10 @@ const update = async () => {
         emit("updated", response.data.comment);
         isEditing.value = false;
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to edit this comment. Please check your connection.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to edit this comment. Please check your connection.",
+        );
     }
 };
 
@@ -68,9 +71,10 @@ const destroy = async () => {
         });
         emit("deleted", props.comment.id);
     } catch (error) {
-        errorMessage.value =
-            error.response?.data?.message ||
-            "Failed to delete this comment. Please check your connection.";
+        errorMessage.value = getErrorMessage(
+            error,
+            "Failed to delete this comment. Please check your connection.",
+        );
     } finally {
         deleteLoading.value = false;
     }
