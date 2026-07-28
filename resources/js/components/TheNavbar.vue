@@ -1,15 +1,17 @@
 <script setup>
-import { useErrorHandler } from "../composables/useErrorHandler";
-import { useAuthStore } from "../stores/AuthStore";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseError from "./ui/BaseError.vue";
-import { ref } from "vue";
-const { getErrorMessage } = useErrorHandler();
+import { useAuthStore } from "../stores/AuthStore";
+import { useErrorHandler } from "../composables/useErrorHandler";
 
 const auth = useAuthStore();
 const router = useRouter();
 
+const { getErrorMessage } = useErrorHandler();
+
 const errorMessage = ref(null);
+
 const logout = async () => {
     errorMessage.value = null;
     try {

@@ -1,31 +1,35 @@
 <script setup>
 import { onMounted, ref } from "vue";
+import { Plus, SquarePen, Trash2, FileText, Tag } from "@lucide/vue";
+
 import BaseError from "../../components/ui/BaseError.vue";
-import api from "../../services/api";
-import dayjs from "../../../utils/dayjs.js";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import PostFormModal from "../../components/posts/PostFormModal.vue";
 import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
-import { useRouter } from "vue-router";
-import { Plus, SquarePen, Trash2, FileText, Tag } from "@lucide/vue";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/AuthStore.js";
+import api from "../../services/api";
+import dayjs from "../../../utils/dayjs.js";
+
+const router = useRouter();
+const auth = useAuthStore();
 
 const { getErrorMessage } = useErrorHandler();
 
-const auth = useAuthStore();
-
-const router = useRouter();
-
+// reactive state
 const posts = ref([]);
 const nextPageUrl = ref(null);
 
+// modal state
 const showCreateModal = ref(false);
 const showEditingModal = ref(false);
 const editingPost = ref(null);
 
+// loading state
 const initialLoading = ref(false);
 const loadingMore = ref(false);
+const deleteLoading = ref(false);
 
 const errorMessage = ref(null);
 
@@ -52,12 +56,6 @@ const loadMore = () => {
     fetchMyPosts(nextPageUrl.value, true);
 };
 
-onMounted(() => {
-    posts.value = [];
-
-    fetchMyPosts("/my-posts");
-});
-
 const onPostSaved = () => {
     showCreateModal.value = false;
 
@@ -72,7 +70,6 @@ const onPostUpdated = async (updatedPost) => {
     posts.value.splice(index, 1, updatedPost);
 };
 
-const deleteLoading = ref(false);
 const destroy = async (post) => {
     if (!confirm("Are you sure you want to delete this experience, bro?"))
         return;
@@ -92,6 +89,12 @@ const destroy = async (post) => {
         deleteLoading.value = false;
     }
 };
+
+onMounted(() => {
+    posts.value = [];
+
+    fetchMyPosts("/my-posts");
+});
 </script>
 
 <template>

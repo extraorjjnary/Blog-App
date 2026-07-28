@@ -1,26 +1,28 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { useAuthStore } from "../../stores/AuthStore";
 import { useRouter } from "vue-router";
-import api from "../../services/api";
-import BaseError from "../../components/ui/BaseError.vue";
-import BaseLoader from "../../components/ui/BaseLoader.vue";
-import dayjs from "../../../utils/dayjs.js";
 import {
     ThumbsUp,
     ThumbsDown,
     MessageCircleMore,
     ArrowRight,
 } from "@lucide/vue";
+import BaseError from "../../components/ui/BaseError.vue";
+import BaseLoader from "../../components/ui/BaseLoader.vue";
+import { useAuthStore } from "../../stores/AuthStore";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
+import api from "../../services/api";
+import dayjs from "../../../utils/dayjs.js";
+
+const router = useRouter();
+const auth = useAuthStore();
 
 const { getErrorMessage } = useErrorHandler();
 
 const post = ref(null);
 
-const router = useRouter();
-
-const auth = useAuthStore();
+const loading = ref(false);
+const errorMessage = ref(null);
 
 const goToExplore = () => router.push({ name: "posts.index" });
 
@@ -31,9 +33,6 @@ const goToCreate = () => {
         router.push({ name: "posts.index" });
     }
 };
-
-const loading = ref(false);
-const errorMessage = ref(null);
 
 const fetchLatestPost = async () => {
     loading.value = true;

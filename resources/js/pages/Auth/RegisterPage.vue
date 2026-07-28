@@ -1,17 +1,18 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { CornerLeftDown } from "@lucide/vue";
 import BaseCard from "../../components/Auth/BaseCard.vue";
 import BaseInput from "../../components/Auth/BaseInput.vue";
 import BaseButton from "../../components/Auth/BaseButton.vue";
-import { useRouter } from "vue-router";
+import BaseError from "../../components/ui/BaseError.vue";
 import { useAuthStore } from "../../stores/AuthStore.js";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
-import BaseError from "../../components/ui/BaseError.vue";
-import { CornerLeftDown } from "@lucide/vue";
-const { getErrorMessage } = useErrorHandler();
 
 const router = useRouter();
 const auth = useAuthStore();
+
+const { getErrorMessage } = useErrorHandler();
 
 const credentials = ref({
     name: "",

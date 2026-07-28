@@ -1,15 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import api from "../../services/api";
 import { useRoute, useRouter } from "vue-router";
-import dayjs from "../../../utils/dayjs.js";
-import BaseLoader from "../../components/ui/BaseLoader.vue";
-import BaseError from "../../components/ui/BaseError.vue";
-import PostFormModal from "../../components/posts/PostFormModal.vue";
-import { useAuthStore } from "../../stores/AuthStore.js";
-import { useReaction } from "../../composables/useReaction.js";
-import { useGuest } from "../../composables/useGuest.js";
-import CommentSection from "../../components/posts/CommentSection.vue";
+
 import {
     SquarePen,
     ThumbsDown,
@@ -18,10 +10,19 @@ import {
     Tag,
     ArrowLeft,
 } from "@lucide/vue";
-import { useErrorHandler } from "../../composables/useErrorHandler.js";
-const { getErrorMessage } = useErrorHandler();
 
-// post looks like this:
+import BaseLoader from "../../components/ui/BaseLoader.vue";
+import BaseError from "../../components/ui/BaseError.vue";
+import PostFormModal from "../../components/posts/PostFormModal.vue";
+import CommentSection from "../../components/posts/CommentSection.vue";
+import { useAuthStore } from "../../stores/AuthStore.js";
+import { useReaction } from "../../composables/useReaction.js";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+import { useGuest } from "../../composables/useGuest.js";
+import api from "../../services/api";
+import dayjs from "../../../utils/dayjs.js";
+
+// my post looks like this:
 // {
 //     id,
 //     user_id,
@@ -35,15 +36,29 @@ const { getErrorMessage } = useErrorHandler();
 // }
 
 const auth = useAuthStore();
-const post = ref(null);
-
-const { react } = useReaction();
-const { guestId } = useGuest();
-
 const router = useRouter();
 const route = useRoute();
 
+const { getErrorMessage } = useErrorHandler();
+const { react } = useReaction();
+const { guestId } = useGuest();
+
+// reactive state
+const post = ref(null);
+
+// modal state
+const showModal = ref(false);
+
+// Reactions State
+const userReaction = ref(null);
+const upvotesCount = ref(0);
+const downvotesCount = ref(0);
+const reactionLoading = ref(false);
+
+// loading state
 const loading = ref(false);
+const deleteLoading = ref(false);
+
 const errorMessage = ref(null);
 
 const fetchPost = async (id) => {
@@ -74,20 +89,11 @@ const fetchPost = async (id) => {
     }
 };
 
-onMounted(() => {
-    const id = route.params.id;
-    fetchPost(id);
-});
-
-// Modal Toggles
-const showModal = ref(false);
-
+// updating a post
 const onPostUpdated = (updatedPost) => {
     showModal.value = false;
     post.value = updatedPost;
 };
-
-const deleteLoading = ref(false);
 
 // Deleting a post
 const destroy = async () => {
@@ -107,12 +113,7 @@ const destroy = async () => {
     }
 };
 
-// Reactions Reactive State
-const userReaction = ref(null);
-const upvotesCount = ref(0);
-const downvotesCount = ref(0);
-const reactionLoading = ref(false);
-
+// reaction
 const reaction = async (type) => {
     if (reactionLoading.value) return;
     reactionLoading.value = true;
@@ -175,6 +176,11 @@ const reaction = async (type) => {
         reactionLoading.value = false;
     }
 };
+
+onMounted(() => {
+    const id = route.params.id;
+    fetchPost(id);
+});
 </script>
 
 <template>

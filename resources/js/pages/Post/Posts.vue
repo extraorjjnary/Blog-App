@@ -1,12 +1,5 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import api from "../../services/api";
-import dayjs from "../../../utils/dayjs.js";
-import BaseLoader from "../../components/ui/BaseLoader.vue";
-import BaseError from "../../components/ui/BaseError.vue";
-import PostFormModal from "../../components/posts/PostFormModal.vue";
-import { useAuthStore } from "../../stores/AuthStore.js";
-import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
 import {
     Plus,
     SquarePen,
@@ -16,19 +9,38 @@ import {
     Search,
     ChevronDown,
 } from "@lucide/vue";
+
+import BaseLoader from "../../components/ui/BaseLoader.vue";
+import BaseError from "../../components/ui/BaseError.vue";
+import PostFormModal from "../../components/posts/PostFormModal.vue";
+import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
+import { useAuthStore } from "../../stores/AuthStore.js";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
-const { getErrorMessage } = useErrorHandler();
+import api from "../../services/api";
+import dayjs from "../../../utils/dayjs.js";
 
 const auth = useAuthStore();
 
+const { getErrorMessage } = useErrorHandler();
+
+// reactive state
 const posts = ref([]);
 const nextPageUrl = ref(null);
-
-// category state
 const categories = ref([]);
-// search and category query params
+
+// search and filter
 const searchQuery = ref("");
 const categoryIdQuery = ref("");
+
+// loading state
+const initialLoading = ref(false);
+const loadingMore = ref(false);
+
+// error state
+const errorMessage = ref(null);
+
+// modal state
+const showModal = ref(false);
 
 // search debounce
 let debounceTimer = null;
@@ -48,11 +60,6 @@ watch(categoryIdQuery, () => {
     nextPageUrl.value = null;
     fetchData("/posts");
 });
-
-const initialLoading = ref(false);
-const loadingMore = ref(false);
-
-const errorMessage = ref(null);
 
 const fetchData = async (url, isLoadMore = false) => {
     !isLoadMore ? (initialLoading.value = true) : (loadingMore.value = true);
@@ -83,17 +90,6 @@ const loadMore = () => {
     fetchData(nextPageUrl.value, true);
 };
 
-// Modal
-
-const showModal = ref(false);
-
-const onPostSaved = () => {
-    showModal.value = false;
-
-    posts.value = [];
-    fetchData("/posts");
-};
-
 // Categories fetch
 const fetchCategories = async () => {
     try {
@@ -107,6 +103,14 @@ const fetchCategories = async () => {
     }
 };
 
+const onPostSaved = () => {
+    showModal.value = false;
+
+    posts.value = [];
+    fetchData("/posts");
+};
+
+// Lifecycle hooks
 onMounted(() => {
     fetchCategories();
     posts.value = [];
