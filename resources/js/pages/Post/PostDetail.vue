@@ -286,7 +286,6 @@ onMounted(() => {
                     </h3>
                 </div>
 
-                <!-- reaction bar wrapper — add flex-col on mobile -->
                 <div
                     class="flex flex-col sm:flex-row justify-center items-center gap-3"
                 >

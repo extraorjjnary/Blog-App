@@ -1,13 +1,10 @@
 <script setup>
 import { ref, watch, computed, nextTick, onMounted } from "vue";
-import api from "../../services/api";
-import { useAuthStore } from "../../stores/AuthStore";
-import BaseError from "../../components/ui/BaseError.vue";
 import { X, Tag, ChevronDown } from "@lucide/vue";
+import BaseError from "../../components/ui/BaseError.vue";
+import { useAuthStore } from "../../stores/AuthStore";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
-const { getErrorMessage } = useErrorHandler();
-
-const auth = useAuthStore();
+import api from "../../services/api";
 
 const props = defineProps({
     isOpen: {
@@ -17,7 +14,70 @@ const props = defineProps({
     post: Object, // null if create, update if persist post data
 });
 
+const emit = defineEmits(["close", "saved"]);
+
+const auth = useAuthStore();
+const { getErrorMessage } = useErrorHandler();
+
+// category state
 const categories = ref([]);
+
+// loading state
+const loading = ref(false);
+
+// error state
+const errorMessage = ref(null);
+
+// form state
+const form = ref({
+    title: "",
+    category_id: "",
+    content: "",
+});
+
+const inputTitle = ref(null);
+
+const isEditMode = computed(() => !!props.post);
+
+// Watch until prop shifts to auto-populate or clear form state
+watch(
+    () => props.isOpen,
+    (isOpen) => {
+        if (!isOpen) {
+            errorMessage.value = null;
+            return;
+        }
+
+        // modal opening — reset based on mode
+        if (props.post) {
+            form.value = {
+                title: props.post.title,
+                category_id: props.post.category_id,
+                content: props.post.content,
+            };
+        } else {
+            // Reset inputs if user shifts from edit mode back to create mode
+            form.value = {
+                title: "",
+                category_id: "",
+                content: "",
+            };
+        }
+    },
+    { immediate: true },
+);
+
+// This will watch until rendering the input inside the DOM
+
+watch(
+    () => props.isOpen,
+    async (isOpenNow) => {
+        if (isOpenNow) {
+            await nextTick();
+            inputTitle.value?.focus();
+        }
+    },
+);
 
 const fetchCategories = async () => {
     try {
@@ -30,23 +90,6 @@ const fetchCategories = async () => {
         );
     }
 };
-
-onMounted(() => {
-    fetchCategories();
-});
-
-const form = ref({
-    title: "",
-    category_id: "",
-    content: "",
-});
-
-const isEditMode = computed(() => !!props.post);
-
-const emit = defineEmits(["close", "saved"]);
-
-const loading = ref(false);
-const errorMessage = ref(null);
 
 const save = async () => {
     loading.value = true;
@@ -81,46 +124,9 @@ const save = async () => {
     }
 };
 
-// Watch until prop shifts to auto-populate or clear form state
-watch(
-    () => props.isOpen,
-    (isOpen) => {
-        if (!isOpen) {
-            errorMessage.value = null;
-            return;
-        }
-
-        // modal opening — reset based on mode
-        if (props.post) {
-            form.value = {
-                title: props.post.title,
-                category_id: props.post.category_id,
-                content: props.post.content,
-            };
-        } else {
-            // Reset inputs if user shifts from edit mode back to create mode
-            form.value = {
-                title: "",
-                category_id: "",
-                content: "",
-            };
-        }
-    },
-    { immediate: true },
-);
-
-// This will watch until rendering the input inside the DOM
-const inputTitle = ref(null);
-
-watch(
-    () => props.isOpen,
-    async (isOpenNow) => {
-        if (isOpenNow) {
-            await nextTick();
-            inputTitle.value?.focus();
-        }
-    },
-);
+onMounted(() => {
+    fetchCategories();
+});
 </script>
 
 <template>
@@ -184,7 +190,7 @@ watch(
                                     type="text"
                                     required
                                     class="w-full px-3.5 py-2.5 bg-bro-bg border border-bro-border rounded-xl text-bro-light text-sm focus:outline-hidden focus:border-bro-crimson focus:ring-4 focus:ring-bro-crimson/10 transition-all placeholder:text-bro-muted/30"
-                                    placeholder="e.g., Finally started training BJJ at 30..."
+                                    placeholder="e.g., My first solo commute to Metro Manila was unforgettable..."
                                 />
                             </div>
 

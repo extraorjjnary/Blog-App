@@ -1,21 +1,28 @@
 <script setup>
 import { ref } from "vue";
 import CommentItem from "./CommentItem.vue";
-import api from "../../services/api.js";
-import { useGuest } from "../../composables/useGuest.js";
 import BaseError from "../ui/BaseError.vue";
+import { useGuest } from "../../composables/useGuest.js";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
-const { getErrorMessage } = useErrorHandler();
-
-const { guestName } = useGuest();
+import api from "../../services/api.js";
 
 const props = defineProps({ post: Object });
 
+const { getErrorMessage } = useErrorHandler();
+const { guestName } = useGuest();
+
 const content = ref("");
 
-// Submitting a comment
+// comments state
+const comments = ref([...props.post.comments]); // copy the props comments to not break the One way data flow
+
+// loading state
 const loading = ref(false);
+
+// error state
 const errorMessage = ref(null);
+
+// Submitting a comment
 const submitComment = async () => {
     loading.value = true;
     errorMessage.value = null;
@@ -37,7 +44,6 @@ const submitComment = async () => {
 };
 
 // handle after create, update, delete fetching
-const comments = ref([...props.post.comments]); // copy the props comments to not break the One way data flow
 
 const onCommentSaved = (newComment) => {
     comments.value.unshift(newComment);

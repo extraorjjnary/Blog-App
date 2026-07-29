@@ -61,7 +61,6 @@ const emit = defineEmits(["confirm", "close"]);
 
                         <slot />
 
-                        <!-- Icon + Title -->
                         <div
                             class="flex flex-col items-center text-center space-y-3 pt-2"
                         >
@@ -85,7 +84,6 @@ const emit = defineEmits(["confirm", "close"]);
                             </div>
                         </div>
 
-                        <!-- Divider -->
                         <div class="border-t border-bro-border"></div>
 
                         <!-- Actions -->

@@ -1,23 +1,30 @@
 <script setup>
 import { nextTick, ref } from "vue";
+import { Check, SquarePen, Trash2 } from "@lucide/vue";
+import BaseError from "../ui/BaseError.vue";
+import dayjs from "../../../utils/dayjs.js";
+import { useErrorHandler } from "../../composables/useErrorHandler.js";
+import DeleteConfirmModal from "../ui/DeleteConfirmModal.vue";
 import { useAuthStore } from "../../stores/AuthStore";
 import { useGuest } from "../../composables/useGuest";
 import api from "../../services/api";
-import BaseError from "../ui/BaseError.vue";
-import dayjs from "../../../utils/dayjs.js";
-import { Check, SquarePen, Trash2 } from "@lucide/vue";
-import { useErrorHandler } from "../../composables/useErrorHandler.js";
-const { getErrorMessage } = useErrorHandler();
-
-const { guestName } = useGuest();
-const auth = useAuthStore();
 
 const props = defineProps({ comment: Object });
-
 const emit = defineEmits(["updated", "deleted"]);
+
+const auth = useAuthStore();
+const { getErrorMessage } = useErrorHandler();
+const { guestName } = useGuest();
 
 const isEditing = ref(false);
 const commentInput = ref(null);
+const showDeleteModal = ref(false);
+
+// error state
+const errorMessage = ref(null);
+
+// delete loading state
+const deleteLoading = ref(false);
 
 // edit form input value
 const editBody = ref(props.comment.content);
@@ -31,7 +38,6 @@ const startEditing = async () => {
 };
 
 // update action
-const errorMessage = ref(null);
 const update = async () => {
     isEditing.value = true;
     errorMessage.value = null;
@@ -59,16 +65,14 @@ const cancelEditing = () => {
 };
 
 // delete action
-const deleteLoading = ref(false);
 const destroy = async () => {
-    if (!confirm("Remove this comment permanently?")) return;
-
     errorMessage.value = null;
     deleteLoading.value = true;
     try {
         await api.delete(`/comments/${props.comment.id}`, {
             data: { guest_name: guestName },
         });
+        showDeleteModal.value = false;
         emit("deleted", props.comment.id);
     } catch (error) {
         errorMessage.value = getErrorMessage(
@@ -157,7 +161,6 @@ const destroy = async () => {
                         type="button"
                         class="inline-flex items-center gap-1.5 hover:text-bro-light transition-colors cursor-pointer font-bold uppercase tracking-wider text-[11px] group"
                     >
-                        <!-- Conditional Icon State Swap based on inline active edit mode -->
                         <template v-if="isEditing">
                             <Check
                                 class="w-3 h-3 text-emerald-500 stroke-[2.5]"
@@ -172,16 +175,13 @@ const destroy = async () => {
                         <span>{{ isEditing ? "Save" : "Edit" }}</span>
                     </button>
 
-                    <!-- Minimal Separator Dot -->
                     <span
                         class="text-bro-border/60 select-none text-sm font-normal"
                         >•</span
                     >
 
-                    <!-- Destructive Delete Action Trigger -->
                     <button
-                        @click="destroy"
-                        :disabled="deleteLoading"
+                        @click="showDeleteModal = true"
                         type="button"
                         class="inline-flex items-center gap-1.5 text-bro-muted hover:text-rose-500 disabled:text-bro-border transition-colors cursor-pointer font-bold uppercase tracking-wider text-[11px] disabled:cursor-not-allowed group"
                     >
@@ -197,4 +197,14 @@ const destroy = async () => {
             </div>
         </div>
     </div>
+
+    <DeleteConfirmModal
+        v-if="showDeleteModal"
+        :is-open="showDeleteModal"
+        title="Delete comment"
+        message="Are you sure you want to delete this comment? This cannot be undone."
+        :loading="deleteLoading"
+        @close="showDeleteModal = false"
+        @confirm="destroy"
+    />
 </template>
