@@ -199,11 +199,11 @@ onMounted(() => {
         </button>
 
         <article
-            class="bg-bro-surface border border-bro-border p-8 rounded-2xl shadow-md"
+            class="bg-bro-surface border border-bro-border p-4 sm:p-8 rounded-2xl shadow-md"
         >
             <header class="mb-10 pb-8 border-b border-bro-border">
                 <h1
-                    class="text-4xl font-extrabold text-bro-light tracking-tighter leading-tight mb-5"
+                    class="text-2xl sm:text-4xl font-extrabold text-bro-light tracking-tighter leading-tight mb-5"
                 >
                     {{ post.title }}
                 </h1>
@@ -286,7 +286,10 @@ onMounted(() => {
                     </h3>
                 </div>
 
-                <div class="flex justify-center items-center gap-3">
+                <!-- reaction bar wrapper — add flex-col on mobile -->
+                <div
+                    class="flex flex-col sm:flex-row justify-center items-center gap-3"
+                >
                     <!-- Relatable Button -->
                     <button
                         :disabled="reactionLoading"
@@ -296,7 +299,7 @@ onMounted(() => {
                                 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-lg shadow-emerald-950/30'
                                 : 'bg-bro-surface border-bro-border text-bro-muted hover:border-emerald-500/20 hover:text-emerald-500 hover:bg-emerald-500/5'
                         "
-                        class="group flex items-center gap-2.5 px-5 py-2.5 border rounded-xl font-semibold transition-all duration-150 cursor-pointer select-none active:scale-95 disabled:opacity-40"
+                        class="group w-full sm:w-auto flex items-center justify-center gap-2.5 px-5 py-2.5 border rounded-xl font-semibold transition-all duration-150 cursor-pointer select-none active:scale-95 disabled:opacity-40"
                     >
                         <ThumbsUp
                             class="w-4 h-4 transition-all duration-150"
@@ -308,9 +311,8 @@ onMounted(() => {
                         />
                         <span
                             class="text-xs uppercase tracking-widest font-bold"
+                            >Relatable</span
                         >
-                            Relatable
-                        </span>
                         <span
                             :class="
                                 userReaction === 'upvote'
@@ -323,8 +325,7 @@ onMounted(() => {
                         </span>
                     </button>
 
-                    <!-- Divider -->
-                    <div class="w-px h-8 bg-bro-border"></div>
+                    <div class="hidden sm:block w-px h-8 bg-bro-border"></div>
 
                     <!-- Not Relatable Button -->
                     <button
@@ -335,7 +336,7 @@ onMounted(() => {
                                 ? 'bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-lg shadow-rose-950/30'
                                 : 'bg-bro-surface border-bro-border text-bro-muted hover:border-rose-500/20 hover:text-rose-500 hover:bg-rose-500/5'
                         "
-                        class="group flex items-center gap-2.5 px-5 py-2.5 border rounded-xl font-semibold transition-all duration-150 cursor-pointer select-none active:scale-95 disabled:opacity-40"
+                        class="group w-full sm:w-auto flex items-center justify-center gap-2.5 px-5 py-2.5 border rounded-xl font-semibold transition-all duration-150 cursor-pointer select-none active:scale-95 disabled:opacity-40"
                     >
                         <ThumbsDown
                             class="w-4 h-4 transition-all duration-150"
@@ -347,9 +348,8 @@ onMounted(() => {
                         />
                         <span
                             class="text-xs uppercase tracking-widest font-bold"
+                            >Not Relatable</span
                         >
-                            Not Relatable
-                        </span>
                         <span
                             :class="
                                 userReaction === 'downvote'

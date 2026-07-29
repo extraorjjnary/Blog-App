@@ -137,17 +137,18 @@ watch(
                 v-if="isOpen && auth.isLoggedIn"
                 @keyup.esc="emit('close')"
                 @click.self="emit('close')"
+                tabindex="-1"
                 class="fixed inset-0 z-100 flex items-center justify-center px-4 overflow-y-auto bg-black/70 backdrop-blur-xs"
                 aria-labelledby="modal-title"
                 role="dialog"
                 aria-modal="true"
             >
                 <div
-                    class="relative w-full max-w-2xl bg-bro-surface p-8 rounded-2xl border border-bro-border shadow-2xl transform transition-all space-y-8 my-8 text-bro-light"
+                    class="relative w-full max-w-2xl bg-bro-surface p-5 sm:p-8 rounded-2xl border border-bro-border shadow-2xl transform transition-all space-y-8 my-8 text-bro-light"
                 >
-                    <div class="text-center">
+                    <div class="text-center pr-8">
                         <h3
-                            class="text-3xl font-extrabold text-bro-light tracking-tight"
+                            class="text-2xl sm:text-3xl font-extrabold text-bro-light tracking-tight"
                             id="modal-title"
                         >
                             {{
@@ -220,7 +221,6 @@ watch(
                                         </option>
                                     </select>
 
-                                    <!-- Dropdown Indicator Arrow (Sits on top of the native arrow we disabled with appearance-none) -->
                                     <div
                                         class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-bro-muted/40"
                                     >
@@ -247,7 +247,7 @@ watch(
                         </div>
 
                         <div
-                            class="flex items-center justify-end gap-3 pt-6 border-t border-bro-border"
+                            class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-6 border-t border-bro-border"
                         >
                             <button
                                 @click="emit('close')"
@@ -260,7 +260,7 @@ watch(
                             <button
                                 type="submit"
                                 :disabled="loading"
-                                class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-bro-crimson hover:bg-bro-crimson-hover focus:outline-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md shadow-bro-crimson/10 flex items-center gap-2"
+                                class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-bro-crimson hover:bg-bro-crimson-hover focus:outline-hidden disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-md shadow-bro-crimson/10 flex items-center justify-center gap-2"
                             >
                                 <div
                                     v-if="loading"
@@ -280,7 +280,7 @@ watch(
                     <button
                         @click="emit('close')"
                         type="button"
-                        class="absolute top-6 right-6 text-bro-muted hover:text-bro-light transition-colors cursor-pointer"
+                        class="absolute top-4 right-4 p-2 -m-2 text-bro-muted hover:text-bro-light transition-colors cursor-pointer"
                         aria-label="Close modal"
                     >
                         <X class="w-5 h-5" />
