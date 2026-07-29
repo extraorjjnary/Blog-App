@@ -243,7 +243,7 @@ This project was built to practice:
 
 ## 👤 Author
 
-**Utol** — Beginner developer from the Philippines 🇵🇭
+**Jj** — Beginner developer from the Philippines 🇵🇭
 
 Built this project from scratch after 1 month of Laravel experience and completing Vue.js self-study. Every line of logic was written with deep understanding — no magic abstractions.
 
