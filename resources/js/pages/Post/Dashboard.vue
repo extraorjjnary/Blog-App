@@ -6,6 +6,7 @@ import BaseError from "../../components/ui/BaseError.vue";
 import BaseLoader from "../../components/ui/BaseLoader.vue";
 import PostFormModal from "../../components/posts/PostFormModal.vue";
 import LoadMoreBtn from "../../components/ui/LoadMoreBtn.vue";
+import DeleteConfirmModal from "../../components/ui/DeleteConfirmModal.vue";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/AuthStore.js";
@@ -20,11 +21,13 @@ const { getErrorMessage } = useErrorHandler();
 // reactive state
 const posts = ref([]);
 const nextPageUrl = ref(null);
+const postToDelete = ref(null);
 
 // modal state
 const showCreateModal = ref(false);
 const showEditingModal = ref(false);
 const editingPost = ref(null);
+const showDeleteModal = ref(false);
 
 // loading state
 const initialLoading = ref(false);
@@ -63,21 +66,24 @@ const onPostSaved = () => {
     fetchMyPosts("/my-posts");
 };
 
-const onPostUpdated = async (updatedPost) => {
+const onPostUpdated = (updatedPost) => {
     showEditingModal.value = false;
     const index = posts.value.findIndex((post) => post.id === updatedPost.id);
 
     posts.value.splice(index, 1, updatedPost);
 };
 
-const destroy = async (post) => {
-    if (!confirm("Are you sure you want to delete this experience, bro?"))
-        return;
+const confirmDelete = (post) => {
+    postToDelete.value = post;
+    showDeleteModal.value = true;
+};
+
+const destroy = async () => {
     deleteLoading.value = true;
     errorMessage.value = null;
     try {
-        await api.delete(`/posts/${post.id}`);
-
+        await api.delete(`/posts/${postToDelete.value.id}`);
+        showDeleteModal.value = false;
         posts.value = [];
         fetchMyPosts("/my-posts");
     } catch (error) {
@@ -219,7 +225,7 @@ onMounted(() => {
                                         <SquarePen class="w-3.5 h-3.5" />
                                     </button>
                                     <button
-                                        @click.stop="destroy(post)"
+                                        @click.stop="confirmDelete(post)"
                                         type="button"
                                         class="p-1.5 bg-bro-bg border border-bro-border text-bro-muted/60 hover:text-red-400 hover:border-red-900/50 hover:bg-red-950/20 rounded-lg transition-all cursor-pointer"
                                     >
@@ -285,7 +291,7 @@ onMounted(() => {
                                     Edit
                                 </button>
                                 <button
-                                    @click.stop.prevent="destroy(post)"
+                                    @click.stop.prevent="confirmDelete(post)"
                                     type="button"
                                     class="px-3 py-1.5 bg-bro-bg border border-bro-border text-xs font-bold text-red-400 rounded-xl cursor-pointer"
                                 >
@@ -334,4 +340,15 @@ onMounted(() => {
         @close="showEditingModal = false"
         @saved="onPostUpdated"
     />
+
+    <DeleteConfirmModal
+        :is-open="showDeleteModal"
+        title="Delete experience"
+        message="This experience will be permanently removed"
+        :loading="deleteLoading"
+        @close="showDeleteModal = false"
+        @confirm="destroy"
+    >
+        <BaseError v-if="errorMessage" :error-messages="errorMessage" />
+    </DeleteConfirmModal>
 </template>

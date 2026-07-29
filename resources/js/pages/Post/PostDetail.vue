@@ -15,6 +15,7 @@ import BaseLoader from "../../components/ui/BaseLoader.vue";
 import BaseError from "../../components/ui/BaseError.vue";
 import PostFormModal from "../../components/posts/PostFormModal.vue";
 import CommentSection from "../../components/posts/CommentSection.vue";
+import DeleteConfirmModal from "../../components/ui/DeleteConfirmModal.vue";
 import { useAuthStore } from "../../stores/AuthStore.js";
 import { useReaction } from "../../composables/useReaction.js";
 import { useErrorHandler } from "../../composables/useErrorHandler.js";
@@ -48,6 +49,7 @@ const post = ref(null);
 
 // modal state
 const showModal = ref(false);
+const showDeleteModal = ref(false);
 
 // Reactions State
 const userReaction = ref(null);
@@ -97,14 +99,11 @@ const onPostUpdated = (updatedPost) => {
 
 // Deleting a post
 const destroy = async () => {
-    if (!confirm("Are you sure you want to delete this experience, bro?"))
-        return;
-
     deleteLoading.value = true;
     errorMessage.value = null;
     try {
         await api.delete(`/posts/${post.value.id}`);
-
+        showDeleteModal.value = false;
         router.push({ name: "posts.index" });
     } catch (error) {
         errorMessage.value = getErrorMessage(error, "Failed to delete post");
@@ -256,7 +255,7 @@ onMounted(() => {
                         </button>
 
                         <button
-                            @click="destroy"
+                            @click="showDeleteModal = true"
                             :disabled="deleteLoading"
                             type="button"
                             class="inline-flex items-center gap-1.5 bg-bro-bg border border-bro-border hover:bg-red-950/40 hover:text-red-400 hover:border-red-900/50 text-bro-muted text-xs px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -375,4 +374,15 @@ onMounted(() => {
         @close="showModal = false"
         @saved="onPostUpdated"
     />
+
+    <DeleteConfirmModal
+        :is-open="showDeleteModal"
+        title="Delete experience"
+        message="Are you sure you want to delete this experience, bro? This cannot be undone."
+        :loading="deleteLoading"
+        @close="showDeleteModal = false"
+        @confirm="destroy"
+    >
+        <BaseError v-if="errorMessage" :error-messages="errorMessage" />
+    </DeleteConfirmModal>
 </template>
