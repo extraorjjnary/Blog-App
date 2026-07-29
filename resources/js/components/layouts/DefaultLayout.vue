@@ -9,7 +9,7 @@ import TheNavbar from "../TheNavbar.vue";
     >
         <TheNavbar />
         <main class="grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-            <!-- Your RouterView loads IndexPage, CreatePage, etc. here -->
+            <!-- Nested children component of Default -->
             <RouterView />
         </main>
     </div>

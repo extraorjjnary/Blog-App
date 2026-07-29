@@ -8,7 +8,7 @@ export const useAuthStore = defineStore("auth", () => {
     const isLoggedIn = computed(() => !!user.value);
 
     const login = async (credentials) => {
-        await api.get("/axios/csrf-cookie");
+        await api.get("/sanctum/csrf-cookie");
         const response = await api.post("/login", credentials);
 
         user.value = response.data.user;
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore("auth", () => {
     };
 
     const register = async (credentials) => {
-        await api.get("/axios/csrf-cookie");
+        await api.get("/sanctum/csrf-cookie");
         const response = await api.post("/register", credentials);
 
         user.value = response.data.user;

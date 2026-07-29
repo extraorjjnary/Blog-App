@@ -5,44 +5,60 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ReactionController;
 use App\Http\Controllers\Api\CommentController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// public auth
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
 
-// public post
+/*
+|--------------------------------------------------------------------------
+| Post Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 
-
-// public reaction
-Route::post('/posts/{post}/reactions', ReactionController::class);
-
-// public comments
-Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
-Route::put('/comments/{comment}', [CommentController::class, 'update']);
-Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
-
-// public categories
-Route::get('/categories', CategoryController::class);
-
-
-
-
-
-// protected routes
 Route::middleware('auth:sanctum')->group(function () {
-
-    // protected post
+    Route::get('/my-posts', [PostController::class, 'myPosts']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
-
-    Route::get('/my-posts', [PostController::class, 'myPosts']);
-
-    // protected auth
-    Route::post('/logout', [AuthController::class, 'logout']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Comment Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Reaction Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/posts/{post}/reactions', ReactionController::class);
+
+/*
+|--------------------------------------------------------------------------
+| Category Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/categories', CategoryController::class);

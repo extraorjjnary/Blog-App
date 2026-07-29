@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, useRoute } from "vue-router";
+import { useAuthStore } from "../stores/AuthStore.js";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,14 +52,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-    const user = localStorage.getItem("user");
+    const auth = useAuthStore();
 
     const requiresAuth = to.meta.requiresAuth;
     const isGuestRoute = ["register", "login"].includes(to.name);
 
-    if (requiresAuth && !user) {
+    if (requiresAuth && !auth.user) {
         return { name: "login" };
-    } else if (isGuestRoute && user) {
+    } else if (isGuestRoute && auth.user) {
         return { name: "posts.index" };
     }
     return true;
